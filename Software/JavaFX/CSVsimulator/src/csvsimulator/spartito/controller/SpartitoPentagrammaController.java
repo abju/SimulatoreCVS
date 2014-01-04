@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -80,6 +82,17 @@ public class SpartitoPentagrammaController extends AnchorPane {
         c.setCursor(Cursor.HAND);
         return c;
     }
+    
+    public Double getTimeByPosition(Double position){
+        Double time = position - tempoSuonataUnit/2;
+        time = time * modelSuonata.getTempoSuonata()/tempoSuonataUnit;
+        return time;
+    }
+    
+    private void getContrattempoFromTime(Integer nBattuta, Integer nCampana){
+        ModelBattuta mb = modelSuonata.getListaBattute().get(nBattuta);
+        System.out.println(mb.getListaCampane().get(nCampana) * modelSuonata.getTempoSuonata());
+    }
 
     private Map<String, Object> getPositionCampana(Double timeCampana, Integer numero_campana) {
         Map<String, Object> r = new HashMap<>();
@@ -96,7 +109,7 @@ public class SpartitoPentagrammaController extends AnchorPane {
      FUNZIONI PUBBLICHE
      */
     public void pushBattuta(final ModelBattuta mb, Label label) {
-        Integer numero_battuta = modelSuonata.pushBattuta(mb);
+        final Integer numero_battuta = modelSuonata.pushBattuta(mb);
 
         Group campaneBattuta = new Group();
         for (final Integer numeroCampana : mb.getListaCampane().keySet()) {
@@ -104,7 +117,7 @@ public class SpartitoPentagrammaController extends AnchorPane {
             Double timeCampana = modelSuonata.getTimeCampana(numero_battuta, numeroCampana);
             Map<String, Object> position = getPositionCampana(timeCampana, numeroCampana);
 
-            Circle c = createCircleCampana((Double) position.get("x"), (Double) position.get("y"));
+            final Circle c = createCircleCampana((Double) position.get("x"), (Double) position.get("y"));
             c.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
                 @Override
@@ -115,6 +128,24 @@ public class SpartitoPentagrammaController extends AnchorPane {
                 }
             });
 
+            c.setOnMouseDragged(new EventHandler<MouseEvent>() {
+
+                @Override
+                public void handle(MouseEvent t) {
+                    c.setCenterX(t.getX());
+//                    getContrattempoFromTime(numero_battuta, numeroCampana, getTimeByPosition(t.getX()));
+                    getContrattempoFromTime(numero_battuta, numeroCampana);
+                }
+            });
+            
+            c.centerXProperty().addListener(new ChangeListener<Number>() {
+
+                @Override
+                public void changed(ObservableValue<? extends Number> ov, Number t, Number t1) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+            });
+            
             campaneBattuta.getChildren().add(c);
 
         }
@@ -129,14 +160,14 @@ public class SpartitoPentagrammaController extends AnchorPane {
         Map<String, Double> timeBattute = modelSuonata.getTimeBattute();
         String lastKey = (String) timeBattute.keySet().toArray()[timeBattute.keySet().size() - 1];
 
-        System.out.println("LastKey: " + lastKey);
-
         Double lunghezza = timeBattute.get(lastKey) / modelSuonata.getTempoSuonata() * tempoSuonataUnit + tempoSuonataUnit * 2;
         for (Iterator<Node> it = rigaPentagrammaLinee.getChildren().iterator(); it.hasNext();) {
             Line node = (Line) it.next();
             node.setEndX(lunghezza);
         }
     }
+    
+    
 
     public void refreshPosizioneCampane() {
         Map<String, Double> timeBattute = modelSuonata.getTimeBattute();
@@ -163,9 +194,10 @@ public class SpartitoPentagrammaController extends AnchorPane {
         ModelBattuta mb = modelSuonata.getListaBattute().get(nBattuta);
         Integer campanaCode = (Integer) mb.getListaCampane().keySet().toArray()[nCampana];
         mb.getListaCampane().put(campanaCode, newValue);
-
-        //System.out.println(nBattuta + " --- " + nCampana);
-        Circle c = (Circle) battute.get(nBattuta).getChildren().get(nCampana);
+    }
+    
+    public void getContrattempoByTime(Integer nBattuta, Integer nCampana, Double newValue) {
+        
     }
 
     public void popBattuta() {

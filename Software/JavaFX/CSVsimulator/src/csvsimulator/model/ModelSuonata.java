@@ -61,6 +61,10 @@ public class ModelSuonata implements Serializable {
     }
     
     public Map<String, Double> getTimeBattute(){
+        return getTimeBattute(true);
+    }
+    
+    public Map<String, Double> getTimeBattute(Boolean contrattempi){
         Map<String, Double> battute = new TreeMap<>();
         double lastValue = 0;
         ArrayList<Integer> prevBattuta = new ArrayList<>();
@@ -80,10 +84,14 @@ public class ModelSuonata implements Serializable {
             prevBattuta = new ArrayList<>();
             for (Integer numeroCampana : modelBattuta.getListaCampane().keySet()) {
                 
-                //val è il tempo dell'dell'ultima campana più la gista pausa
+                //val è il tempo dell'dell'ultima campana più la giusta pausa
                 //la moltiplicazione aggiunge il contrattempo
                 //TODO deve essere in base al tempo suonata o al tempo suonata + tempo ritorno?
-                double intval = val + tempoSuonata * modelBattuta.getListaCampane().get(numeroCampana);
+                double intval = val;
+                        
+                if(contrattempi)
+                    intval += tempoSuonata * modelBattuta.getListaCampane().get(numeroCampana);
+                
                 if(isRitorno)
                     intval += tempoRitorno;
                 

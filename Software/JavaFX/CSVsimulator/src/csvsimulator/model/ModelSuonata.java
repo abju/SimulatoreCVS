@@ -86,16 +86,14 @@ public class ModelSuonata implements Serializable {
                 
                 //val è il tempo dell'dell'ultima campana più la giusta pausa
                 //la moltiplicazione aggiunge il contrattempo
-                //TODO deve essere in base al tempo suonata o al tempo suonata + tempo ritorno?
                 double intval = val;
                         
                 if(contrattempi)
-                    intval += tempoSuonata * modelBattuta.getListaCampane().get(numeroCampana);
+                    intval += modelBattuta.getTimeContrattempo(numeroCampana, tempoSuonata);
                 
                 if(isRitorno)
                     intval += tempoRitorno;
                 
-                //System.out.println(modelBattuta.getListaCampane().get(numeroCampana) + " --- " + intval + " --- " + val);
                 battute.put(index + "||" + numeroCampana, intval);
                 
                 if (numeroCampana > mainCampana) {

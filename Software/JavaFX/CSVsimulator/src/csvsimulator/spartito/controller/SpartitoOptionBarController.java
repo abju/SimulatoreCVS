@@ -8,6 +8,7 @@ package csvsimulator.spartito.controller;
 import csvsimulator.model.ModelBattuta;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Map;
@@ -21,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -49,6 +51,9 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
 
     @FXML
     private ChoiceBox optBattutaSelectCampana;
+    
+    @FXML
+    private BigDecimalField tempoSuonata;
 
     private SpartitoBaseController spartitoBaseController;
     private SpartitoPentagrammaController spartitoPentagrammaController;
@@ -62,6 +67,9 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
         init();
         this.spartitoBaseController = spartitoBaseController;
         this.spartitoPentagrammaController = spartitoPentagrammaController;
+        
+        tempoSuonata.setMinValue(new BigDecimal(0.5));
+        tempoSuonata.setNumber(new BigDecimal(spartitoPentagrammaController.getModelSuonata().getTempoSuonata() / 1000));
     }
 
     private void init() {
@@ -75,6 +83,16 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
             throw new RuntimeException(exception);
         }
 
+        //SUONATA
+        tempoSuonata.numberProperty().addListener(new ChangeListener<BigDecimal>() {
+
+            @Override
+            public void changed(ObservableValue<? extends BigDecimal> ov, BigDecimal t, BigDecimal t1) {
+                spartitoPentagrammaController.getModelSuonata().setTempoSuonata(t1.doubleValue()*1000);
+            }
+        });
+        
+        //BATTUTA
         spinnerContrattempo.numberProperty().addListener(new ChangeListener<BigDecimal>() {
             @Override
             public void changed(ObservableValue<? extends BigDecimal> ov, BigDecimal oldValue, BigDecimal newValue) {
@@ -84,6 +102,7 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
                 spartitoPentagrammaController.refreshPosizioneCampane();
             }
         });
+        
 
         optBattutaSelectCampana.valueProperty().addListener(new ChangeListener() {
 

@@ -51,6 +51,9 @@ public class SpartitoPentagrammaController extends AnchorPane {
     private static double distanzaTraRighe = 40;
 
     private double tempoSuonataUnit;
+    
+    
+    private double startDragPos;
 
     public SpartitoPentagrammaController() {
         modelSuonata = new ModelSuonata();
@@ -89,9 +92,19 @@ public class SpartitoPentagrammaController extends AnchorPane {
         return time;
     }
     
-    private void getContrattempoFromTime(Integer nBattuta, Integer nCampana){
+    private void getContrattempoFromTime(Integer nBattuta, Integer nCampana, Double oldPos, Double newPos){
         ModelBattuta mb = modelSuonata.getListaBattute().get(nBattuta);
-        System.out.println(mb.getListaCampane().get(nCampana) * modelSuonata.getTempoSuonata());
+        Double contrattempo = mb.getTimeContrattempo(nCampana, modelSuonata.getTempoSuonata());
+        Double tempoAttuale = getTimeByPosition(oldPos);
+        Double tempoCorretto = tempoAttuale - contrattempo;
+        
+        Double tempoFinale = getTimeByPosition(newPos);
+        Double contrattempoAttuale = tempoFinale - tempoCorretto;
+        
+  //      Double contrattempo = newValue.doubleValue()*1000;
+//                contrattempo = contrattempo / spartitoPentagrammaController.getModelSuonata().getTempoSuonata();
+        mb.getListaCampane().put(nCampana, contrattempoAttuale / modelSuonata.getTempoSuonata());
+        System.out.println(tempoAttuale + " -- " + tempoCorretto + " -- " + tempoFinale + " -- " + oldPos + " -- " + newPos);
     }
 
     private Map<String, Object> getPositionCampana(Double timeCampana, Integer numero_campana) {
@@ -128,21 +141,25 @@ public class SpartitoPentagrammaController extends AnchorPane {
                 }
             });
 
+            
+            c.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+                @Override
+                public void handle(MouseEvent t) {
+                    startDragPos = t.getX();
+                    System.out.println("Drag start");                }
+            });
+            
             c.setOnMouseDragged(new EventHandler<MouseEvent>() {
 
                 @Override
                 public void handle(MouseEvent t) {
+                    System.out.println("Drag " + startDragPos);
                     c.setCenterX(t.getX());
+                    getContrattempoFromTime(numero_battuta, numeroCampana, startDragPos, t.getX());
+                    startDragPos = t.getX();
 //                    getContrattempoFromTime(numero_battuta, numeroCampana, getTimeByPosition(t.getX()));
-                    getContrattempoFromTime(numero_battuta, numeroCampana);
-                }
-            });
-            
-            c.centerXProperty().addListener(new ChangeListener<Number>() {
-
-                @Override
-                public void changed(ObservableValue<? extends Number> ov, Number t, Number t1) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    
                 }
             });
             

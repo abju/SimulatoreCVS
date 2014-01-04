@@ -45,6 +45,10 @@ public final class ModelBattuta implements Serializable {
         return nomeBattuta;
     }
     
+    public Double getTimeContrattempo(Integer numero_campana, Double tempoSuonata){
+        return tempoSuonata * listaCampane.get(numero_campana);
+    }
+    
     public void play(ModelConcerto concerto){
         for (Integer numeroCampana : listaCampane.keySet()) {
             concerto.getCampanaByNumero(numeroCampana).play();

@@ -104,10 +104,11 @@ public class SpartitoPentagrammaController extends AnchorPane {
   //      Double contrattempo = newValue.doubleValue()*1000;
 //                contrattempo = contrattempo / spartitoPentagrammaController.getModelSuonata().getTempoSuonata();
         mb.getListaCampane().put(nCampana, contrattempoAttuale / modelSuonata.getTempoSuonata());
-        System.out.println(tempoAttuale + " -- " + tempoCorretto + " -- " + tempoFinale + " -- " + oldPos + " -- " + newPos);
+        //System.out.println(tempoAttuale + " -- " + tempoCorretto + " -- " + tempoFinale + " -- " + oldPos + " -- " + newPos + "--" + (contrattempoAttuale / modelSuonata.getTempoSuonata()));
     }
 
     private Map<String, Object> getPositionCampana(Double timeCampana, Integer numero_campana) {
+        System.err.println(timeCampana+"");
         Map<String, Object> r = new HashMap<>();
         double x = tempoSuonataUnit * timeCampana / modelSuonata.getTempoSuonata() + tempoSuonataUnit / 2;
         double y = dimensioneNote + (dimensioneNote * (ncampane / 2 - 1)) + dimensioneNote / 2 - numero_campana * dimensioneNote / 2;
@@ -136,7 +137,7 @@ public class SpartitoPentagrammaController extends AnchorPane {
                 @Override
                 public void handle(MouseEvent t) {
                     //Trovo l'indice della battuta con hasCode
-                    int numero_battuta = SpartitoBaseController.getNumberBattutaFromModelBattuta(mb, modelSuonata.getListaBattute());
+                    int numero_battuta = modelSuonata.getNumberBattutaFromModelBattuta(mb);
                     spartitoBaseController.getOptionBar().setUpOptionBattuta(numero_battuta, numeroCampana);
                 }
             });
@@ -146,19 +147,40 @@ public class SpartitoPentagrammaController extends AnchorPane {
 
                 @Override
                 public void handle(MouseEvent t) {
-                    startDragPos = t.getX();
-                    System.out.println("Drag start");                }
+                    startDragPos = t.getX();               
+                }
             });
             
             c.setOnMouseDragged(new EventHandler<MouseEvent>() {
 
                 @Override
                 public void handle(MouseEvent t) {
-                    System.out.println("Drag " + startDragPos);
-                    c.setCenterX(t.getX());
-                    getContrattempoFromTime(numero_battuta, numeroCampana, startDragPos, t.getX());
-                    startDragPos = t.getX();
-//                    getContrattempoFromTime(numero_battuta, numeroCampana, getTimeByPosition(t.getX()));
+                    Double posNote = t.getX();
+                    
+                    Double contrattempo = mb.getTimeContrattempo(numeroCampana, modelSuonata.getTempoSuonata());
+                    Double tempoAttuale = getTimeByPosition(c.getCenterX());
+                    Double tempoCorretto = tempoAttuale - contrattempo;
+                    
+                    Double tempoFinale = getTimeByPosition(t.getX());
+                    Double contrattempoAttuale = (tempoFinale - tempoCorretto)/1000;
+                    
+                    if(contrattempoAttuale > modelSuonata.getMaxContrattempoSec(numero_battuta, numeroCampana)){
+                        Map<String, Object> pos = getPositionCampana(tempoCorretto + modelSuonata.getMaxContrattempoSec(numero_battuta, numeroCampana)*1000, numeroCampana);
+                        posNote = (Double)pos.get("x");
+                    } 
+                    if(contrattempoAttuale < -modelSuonata.getMinContrattempoSec(numero_battuta, numeroCampana)){ 
+                        Map<String, Object> pos = getPositionCampana(tempoCorretto - modelSuonata.getMinContrattempoSec(numero_battuta, numeroCampana)*1000, numeroCampana);
+                        posNote = (Double)pos.get("x");
+                    }
+                    
+                    
+                    
+                    c.setCenterX(posNote);
+                    getContrattempoFromTime(numero_battuta, numeroCampana, startDragPos, posNote);
+                    startDragPos = posNote;
+
+                    int numero_battuta = modelSuonata.getNumberBattutaFromModelBattuta(mb);
+                    spartitoBaseController.getOptionBar().setUpOptionBattuta(numero_battuta, numeroCampana);
                     
                 }
             });

@@ -33,7 +33,7 @@ public class ModelSuonata implements Serializable {
     public ModelSuonata() {
         listaBattute = new ArrayList<>();
         tempoSuonata = 1200;
-        tempoRitorno = tempoSuonata / 2;
+        tempoRitorno = tempoSuonata;
     }
 
     public Integer pushBattuta(ModelBattuta b) {
@@ -92,7 +92,7 @@ public class ModelSuonata implements Serializable {
                     intval += modelBattuta.getTimeContrattempo(numeroCampana, tempoSuonata);
                 
                 if(isRitorno)
-                    intval += tempoRitorno;
+                    intval += getTempoRitorno();
                 
                 battute.put(index + "||" + numeroCampana, intval);
                 
@@ -150,7 +150,7 @@ public class ModelSuonata implements Serializable {
         campaneBattua.retainAll(campanePrecendi);
         boolean isRitorno = (campaneBattua.size() > 0);
         if(isRitorno && !mioRitorno){
-            return (tempoSuonata+tempoRitorno)/1000;
+            return (tempoSuonata+getTempoRitorno())/1000;
         }        
         
         return tempoSuonata/1000;
@@ -159,6 +159,19 @@ public class ModelSuonata implements Serializable {
     //restituire il minimo dei massimi
     public Double getMaxContrattempoSec(Integer numero_battuta, Integer numero_campana){
         return tempoSuonata/1000;
+    }
+    
+    
+    public Integer getNumberBattutaFromModelBattuta(ModelBattuta mb) {
+        int numero_battuta;
+        for (ListIterator it = listaBattute.listIterator(); it.hasNext();) {
+            numero_battuta = it.nextIndex();
+            ModelBattuta o = (ModelBattuta) it.next();
+            if (o.hashCode() == mb.hashCode()) {
+                return numero_battuta;
+            }
+        }
+        return null;
     }
 
     /**

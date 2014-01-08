@@ -149,7 +149,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
             @Override
             public void handle(MouseEvent t) {
                 //Trovo l'indice della battuta con hasCode
-                int numero_battuta = getNumberBattutaFromModelBattuta(mb, spartitoPentagramma.getModelSuonata().getListaBattute());
+                int numero_battuta = spartitoPentagramma.getModelSuonata().getNumberBattutaFromModelBattuta(mb);
                 getOptionBar().setUpOptionBattuta(numero_battuta);
             }
         });
@@ -163,7 +163,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
 
     }
 
-    public static Integer getNumberBattutaFromModelBattuta(ModelBattuta mb, List<ModelBattuta> lmb) {
+    /*public static Integer getNumberBattutaFromModelBattuta(ModelBattuta mb, List<ModelBattuta> lmb) {
         int numero_battuta;
         for (ListIterator it = lmb.listIterator(); it.hasNext();) {
             numero_battuta = it.nextIndex();
@@ -173,7 +173,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
             }
         }
         return null;
-    }
+    }*/
 
     public Integer getColumns() {
         double cols;

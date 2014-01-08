@@ -52,12 +52,12 @@ public class PlayerUtils {
 
     public static class runThreadCampane implements Runnable {
 
-        private String name;
-        private Thread t;
+        private final String name;
+        private final Thread t;
         private boolean suspendFlag;
 
-        private List<PlayerCodaCampana> coda;
-        private Player p;
+        private final List<PlayerCodaCampana> coda;
+        private final Player p;
 
         public runThreadCampane(String tName, List<PlayerCodaCampana> coda, Player p) {
             name = tName;

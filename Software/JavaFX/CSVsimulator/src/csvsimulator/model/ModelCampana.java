@@ -6,14 +6,10 @@
 
 package csvsimulator.model;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
-import player.PlayerThreadSound;
-import player.PlayerUtils;
+import java.net.URI;
+import javafx.scene.media.AudioClip;
 
 /**
  *
@@ -24,12 +20,10 @@ public class ModelCampana implements Serializable{
     
     private String nome;
     private int numero;
-    private InputStream streamAudio;
-    private String pathFileAudio;
+    private AudioClip audioClip;
 
-    //mp3
+    
     public ModelCampana() {
-        pathFileAudio = null;
     }
 
     public ModelCampana(String nome, int numero) {
@@ -37,24 +31,23 @@ public class ModelCampana implements Serializable{
         this.numero = numero;
     }
     
+    public ModelCampana(String nome, int numero, String path) {
+        this.nome = nome;
+        this.numero = numero;
+        
+        File f = new File(path);
+        URI u = f.toURI();
+        this.audioClip = new AudioClip(u.toString());
+    }
+    
     public void loadFromPath(String path){
-        pathFileAudio = path;
-        try {
-            FileInputStream fis3 = new FileInputStream(pathFileAudio);
-            BufferedInputStream bis = new BufferedInputStream(fis3);
-            streamAudio = bis;
-        } catch (FileNotFoundException e) {
-            System.err.println(e.toString());
-        }
+        File f = new File(path);
+        URI u = f.toURI();
+        audioClip = new AudioClip(u.toString());
     }
     
     public void play() {
-        ArrayList<InputStream> stream = PlayerUtils.cloneInputStream(streamAudio);
-        if (stream != null) {
-            streamAudio = stream.get(0);
-            PlayerThreadSound sound = new PlayerThreadSound("Sestina", stream.get(1));
-            sound.start();
-        }
+        audioClip.play();
     }
 
     /**
@@ -83,21 +76,6 @@ public class ModelCampana implements Serializable{
      */
     public void setNumero(int numero) {
         this.numero = numero;
-    }
-
-    /**
-     * @return the streamAudio
-     */
-    public InputStream getStreamAudio() {
-        return streamAudio;
-    }
-
-    /**
-     * @param streamAudio the streamAudio to set
-     */
-    public void setStreamAudio(InputStream streamAudio) {
-        this.streamAudio = streamAudio;
-    }
-    
+    }   
     
 }

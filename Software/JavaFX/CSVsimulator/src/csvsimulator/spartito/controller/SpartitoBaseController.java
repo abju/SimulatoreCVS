@@ -8,7 +8,9 @@ package csvsimulator.spartito.controller;
 import csvsimulator.model.ModelBattuta;
 import csvsimulator.model.ModelConcerto;
 import csvsimulator.navbar.controller.NavbarBaseController;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
@@ -26,6 +28,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
+import javafx.scene.media.AudioClip;
 
 /**
  *
@@ -136,6 +139,8 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
 
     /*METODI PRIVATI*/
     private void addBattuta(final ModelBattuta mb) {
+              
+        
         //mb.play(modelConcerto);
         Label label = new Label(mb.getNomeBattuta(modelConcerto));
         label.setMaxWidth(USE_PREF_SIZE);

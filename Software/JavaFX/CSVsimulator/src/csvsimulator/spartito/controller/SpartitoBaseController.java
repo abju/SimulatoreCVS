@@ -10,8 +10,6 @@ import csvsimulator.model.ModelConcerto;
 import csvsimulator.navbar.controller.NavbarBaseController;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -107,7 +105,9 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     @FXML
     private void nuovaBattutaKeyPress(KeyEvent t) {
         if (t.getCode() == KeyCode.BACK_SPACE) {
-            System.out.println("Ho premuto il cancella " + nuovaBattuta.getCharacters().length());
+            if (nuovaBattuta.getCharacters().length() <= 0) {
+                popBattuta();
+            }
         }
     }
 
@@ -163,17 +163,13 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
 
     }
 
-    /*public static Integer getNumberBattutaFromModelBattuta(ModelBattuta mb, List<ModelBattuta> lmb) {
-        int numero_battuta;
-        for (ListIterator it = lmb.listIterator(); it.hasNext();) {
-            numero_battuta = it.nextIndex();
-            ModelBattuta o = (ModelBattuta) it.next();
-            if (o.hashCode() == mb.hashCode()) {
-                return numero_battuta;
-            }
+    public void popBattuta() {
+        Integer index = spartitoPentagramma.getModelSuonata().getListaBattute().size() - 1;
+        if (index >= 0) {
+            elenco_battute.getChildren().remove(elenco_battute.getChildren().get(index));
+            spartitoPentagramma.popBattuta();
         }
-        return null;
-    }*/
+    }
 
     public Integer getColumns() {
         double cols;

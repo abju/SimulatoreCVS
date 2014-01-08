@@ -138,12 +138,14 @@ public class SpartitoPentagrammaController extends AnchorPane {
 
     private void refreshLunghezzaLinee() {
         Map<String, Double> timeBattute = getModelSuonata().getTimeBattute();
-        String lastKey = (String) timeBattute.keySet().toArray()[timeBattute.keySet().size() - 1];
+        if (timeBattute.keySet().size() - 1 >= 0) {
+            String lastKey = (String) timeBattute.keySet().toArray()[timeBattute.keySet().size() - 1];
 
-        Double lunghezza = timeBattute.get(lastKey) / getModelSuonata().getTempoSuonata() * tempoSuonataUnit + tempoSuonataUnit * 2;
-        for (Iterator<Node> it = rigaPentagrammaLinee.getChildren().iterator(); it.hasNext();) {
-            Line node = (Line) it.next();
-            node.setEndX(lunghezza);
+            Double lunghezza = timeBattute.get(lastKey) / getModelSuonata().getTempoSuonata() * tempoSuonataUnit + tempoSuonataUnit * 2;
+            for (Iterator<Node> it = rigaPentagrammaLinee.getChildren().iterator(); it.hasNext();) {
+                Line node = (Line) it.next();
+                node.setEndX(lunghezza);
+            }
         }
     }
 

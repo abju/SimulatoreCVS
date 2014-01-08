@@ -7,9 +7,12 @@ package csvsimulator;
 import csvsimulator.model.ModelCampana;
 import csvsimulator.model.ModelConcerto;
 import csvsimulator.spartito.controller.SpartitoBaseController;
+import java.io.File;
+import java.net.URI;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
 
 /**
@@ -42,7 +45,12 @@ public class CSVsimulator extends Application {
         mc.loadFromPath("C:\\Users\\lion\\Documents\\GitHub\\SimulatoreCVS\\Software\\JavaFX\\CSVsimulator\\resources\\test\\campanili\\albaredo\\Albaredo 5 - long.mp3");
         concertoAlbaredo.pushCampana(mc);
         
-        
+        /*
+        File f = new File("C:\\Users\\lion\\Documents\\GitHub\\SimulatoreCVS\\Software\\JavaFX\\CSVsimulator\\resources\\test\\campanili\\albaredo\\Albaredo 5 - long.mp3");
+        URI u = f.toURI();
+        AudioClip l = new AudioClip(u.toString());
+        l.play();
+        */
         //Inizializzo la scena
         SampleController root = new SampleController();
         

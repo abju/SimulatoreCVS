@@ -7,6 +7,7 @@ package csvsimulator.spartito.controller;
 
 import csvsimulator.model.ModelBattuta;
 import csvsimulator.model.ModelSuonata;
+import csvsimulator.spartito.controller.object.DraggableCircleSpartito;
 import java.math.BigDecimal;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -77,24 +78,16 @@ public class SpartitoPentagrammaController extends AnchorPane {
         getChildren().add(rigaPentagramma);
         setTopAnchor(rigaPentagramma, distanzaTraRighe);
     }
-
-    private Circle createCircleCampana(double x, double y) {
-        Circle c = new Circle(dimensioneNote / 2, Color.RED);
-        c.setCenterX(x);
-        c.setCenterY(y);
-        c.setCursor(Cursor.HAND);
-        return c;
-    }
     
     public Double getTimeByPosition(Double position){
         Double time = position - tempoSuonataUnit/2;
-        time = time * modelSuonata.getTempoSuonata()/tempoSuonataUnit;
+        time = time * getModelSuonata().getTempoSuonata()/tempoSuonataUnit;
         return time;
     }
     
-    private void getContrattempoFromTime(Integer nBattuta, Integer nCampana, Double oldPos, Double newPos){
-        ModelBattuta mb = modelSuonata.getListaBattute().get(nBattuta);
-        Double contrattempo = mb.getTimeContrattempo(nCampana, modelSuonata.getTempoSuonata());
+    public void getContrattempoFromTime(Integer nBattuta, Integer nCampana, Double oldPos, Double newPos){
+        ModelBattuta mb = getModelSuonata().getListaBattute().get(nBattuta);
+        Double contrattempo = mb.getTimeContrattempo(nCampana, getModelSuonata().getTempoSuonata());
         Double tempoAttuale = getTimeByPosition(oldPos);
         Double tempoCorretto = tempoAttuale - contrattempo;
         
@@ -103,14 +96,13 @@ public class SpartitoPentagrammaController extends AnchorPane {
         
   //      Double contrattempo = newValue.doubleValue()*1000;
 //                contrattempo = contrattempo / spartitoPentagrammaController.getModelSuonata().getTempoSuonata();
-        mb.getListaCampane().put(nCampana, contrattempoAttuale / modelSuonata.getTempoSuonata());
+        mb.getListaCampane().put(nCampana, contrattempoAttuale / getModelSuonata().getTempoSuonata());
         //System.out.println(tempoAttuale + " -- " + tempoCorretto + " -- " + tempoFinale + " -- " + oldPos + " -- " + newPos + "--" + (contrattempoAttuale / modelSuonata.getTempoSuonata()));
     }
 
-    private Map<String, Object> getPositionCampana(Double timeCampana, Integer numero_campana) {
-        System.err.println(timeCampana+"");
+    public Map<String, Object> getPositionCampana(Double timeCampana, Integer numero_campana) {
         Map<String, Object> r = new HashMap<>();
-        double x = tempoSuonataUnit * timeCampana / modelSuonata.getTempoSuonata() + tempoSuonataUnit / 2;
+        double x = tempoSuonataUnit * timeCampana / getModelSuonata().getTempoSuonata() + tempoSuonataUnit / 2;
         double y = dimensioneNote + (dimensioneNote * (ncampane / 2 - 1)) + dimensioneNote / 2 - numero_campana * dimensioneNote / 2;
 
         r.put("y", y);
@@ -123,68 +115,17 @@ public class SpartitoPentagrammaController extends AnchorPane {
      FUNZIONI PUBBLICHE
      */
     public void pushBattuta(final ModelBattuta mb, Label label) {
-        final Integer numero_battuta = modelSuonata.pushBattuta(mb);
+        final Integer numero_battuta = getModelSuonata().pushBattuta(mb);
 
         Group campaneBattuta = new Group();
         for (final Integer numeroCampana : mb.getListaCampane().keySet()) {
 
-            Double timeCampana = modelSuonata.getTimeCampana(numero_battuta, numeroCampana);
+            Double timeCampana = getModelSuonata().getTimeCampana(numero_battuta, numeroCampana);
             Map<String, Object> position = getPositionCampana(timeCampana, numeroCampana);
 
-            final Circle c = createCircleCampana((Double) position.get("x"), (Double) position.get("y"));
-            c.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-                @Override
-                public void handle(MouseEvent t) {
-                    //Trovo l'indice della battuta con hasCode
-                    int numero_battuta = modelSuonata.getNumberBattutaFromModelBattuta(mb);
-                    spartitoBaseController.getOptionBar().setUpOptionBattuta(numero_battuta, numeroCampana);
-                }
-            });
-
-            
-            c.setOnMousePressed(new EventHandler<MouseEvent>() {
-
-                @Override
-                public void handle(MouseEvent t) {
-                    startDragPos = t.getX();               
-                }
-            });
-            
-            c.setOnMouseDragged(new EventHandler<MouseEvent>() {
-
-                @Override
-                public void handle(MouseEvent t) {
-                    Double posNote = t.getX();
-                    
-                    Double contrattempo = mb.getTimeContrattempo(numeroCampana, modelSuonata.getTempoSuonata());
-                    Double tempoAttuale = getTimeByPosition(c.getCenterX());
-                    Double tempoCorretto = tempoAttuale - contrattempo;
-                    
-                    Double tempoFinale = getTimeByPosition(t.getX());
-                    Double contrattempoAttuale = (tempoFinale - tempoCorretto)/1000;
-                    
-                    if(contrattempoAttuale > modelSuonata.getMaxContrattempoSec(numero_battuta, numeroCampana)){
-                        Map<String, Object> pos = getPositionCampana(tempoCorretto + modelSuonata.getMaxContrattempoSec(numero_battuta, numeroCampana)*1000, numeroCampana);
-                        posNote = (Double)pos.get("x");
-                    } 
-                    if(contrattempoAttuale < -modelSuonata.getMinContrattempoSec(numero_battuta, numeroCampana)){ 
-                        Map<String, Object> pos = getPositionCampana(tempoCorretto - modelSuonata.getMinContrattempoSec(numero_battuta, numeroCampana)*1000, numeroCampana);
-                        posNote = (Double)pos.get("x");
-                    }
-                    
-                    
-                    
-                    c.setCenterX(posNote);
-                    getContrattempoFromTime(numero_battuta, numeroCampana, startDragPos, posNote);
-                    startDragPos = posNote;
-
-                    int numero_battuta = modelSuonata.getNumberBattutaFromModelBattuta(mb);
-                    spartitoBaseController.getOptionBar().setUpOptionBattuta(numero_battuta, numeroCampana);
-                    
-                }
-            });
-            
+            DraggableCircleSpartito c = new DraggableCircleSpartito(mb, numeroCampana, spartitoBaseController, this);
+            c.setCenterX((Double) position.get("x"));
+            c.setCenterY((Double) position.get("y"));
             campaneBattuta.getChildren().add(c);
 
         }
@@ -196,10 +137,10 @@ public class SpartitoPentagrammaController extends AnchorPane {
     }
 
     private void refreshLunghezzaLinee() {
-        Map<String, Double> timeBattute = modelSuonata.getTimeBattute();
+        Map<String, Double> timeBattute = getModelSuonata().getTimeBattute();
         String lastKey = (String) timeBattute.keySet().toArray()[timeBattute.keySet().size() - 1];
 
-        Double lunghezza = timeBattute.get(lastKey) / modelSuonata.getTempoSuonata() * tempoSuonataUnit + tempoSuonataUnit * 2;
+        Double lunghezza = timeBattute.get(lastKey) / getModelSuonata().getTempoSuonata() * tempoSuonataUnit + tempoSuonataUnit * 2;
         for (Iterator<Node> it = rigaPentagrammaLinee.getChildren().iterator(); it.hasNext();) {
             Line node = (Line) it.next();
             node.setEndX(lunghezza);
@@ -209,9 +150,9 @@ public class SpartitoPentagrammaController extends AnchorPane {
     
 
     public void refreshPosizioneCampane() {
-        Map<String, Double> timeBattute = modelSuonata.getTimeBattute();
+        Map<String, Double> timeBattute = getModelSuonata().getTimeBattute();
 
-        for (ListIterator<ModelBattuta> it = modelSuonata.getListaBattute().listIterator(); it.hasNext();) {
+        for (ListIterator<ModelBattuta> it = getModelSuonata().getListaBattute().listIterator(); it.hasNext();) {
             Integer numero_battuta = it.nextIndex();
             ModelBattuta modelBattuta = it.next();
             for (ListIterator<Integer> it1 = new ArrayList<>(modelBattuta.getListaCampane().keySet()).listIterator(); it1.hasNext();) {
@@ -230,7 +171,7 @@ public class SpartitoPentagrammaController extends AnchorPane {
     }
 
     public void setContrattempoCampana(Integer nBattuta, Integer nCampana, Double newValue) {
-        ModelBattuta mb = modelSuonata.getListaBattute().get(nBattuta);
+        ModelBattuta mb = getModelSuonata().getListaBattute().get(nBattuta);
         Integer campanaCode = (Integer) mb.getListaCampane().keySet().toArray()[nCampana];
         mb.getListaCampane().put(campanaCode, newValue);
     }

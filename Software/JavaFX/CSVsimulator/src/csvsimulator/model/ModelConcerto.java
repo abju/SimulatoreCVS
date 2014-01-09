@@ -3,21 +3,27 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package csvsimulator.model;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 /**
  *
  * @author lion
  */
-public class ModelConcerto implements Serializable{
+public class ModelConcerto implements Serializable {
+
     private static final long serialVersionUID = 1;
-    
+
     private String nomeConcerto;
     private List<ModelCampana> listaCampane;
     //se si vuole evitare di serializzare un attributo basta mettere transient
@@ -33,42 +39,68 @@ public class ModelConcerto implements Serializable{
         this.listaCampane = listaCampane;
     }
 
-    
-    public void pushCampana(ModelCampana campana){
+    public void pushCampana(ModelCampana campana) {
         listaCampane.add(campana);
         //TODO lanciare un'eccezione se esiste già una campana con lo stesso numero o con lo stesso nome
     }
-    
-    public ModelCampana getCampanaByNumero(int numeroCampana){
+
+    public ModelCampana getCampanaByNumero(int numeroCampana) {
         for (Iterator<ModelCampana> it = listaCampane.iterator(); it.hasNext();) {
             ModelCampana modelCampana = it.next();
-            if(modelCampana.getNumero() == numeroCampana){
+            if (modelCampana.getNumero() == numeroCampana) {
                 return modelCampana;
             }
         }
         return null;
     }
-    
-    public ModelCampana getCampanaByNome(String nome){
+
+    public ModelCampana getCampanaByNome(String nome) {
         for (Iterator<ModelCampana> it = listaCampane.iterator(); it.hasNext();) {
             ModelCampana modelCampana = it.next();
-            if(modelCampana.getNome().equals(nome)){
+            if (modelCampana.getNome().equals(nome)) {
                 return modelCampana;
             }
         }
         return null;
     }
-    
-    public boolean isNomeValido(String nome){
+
+    public boolean isNomeValido(String nome) {
         for (Iterator<ModelCampana> it = listaCampane.iterator(); it.hasNext();) {
             ModelCampana modelCampana = it.next();
-            if(modelCampana.getNome().equals(nome)){
+            if (modelCampana.getNome().equals(nome)) {
                 return true;
             }
         }
         return false;
     }
-    
+
+    public void saveFileConcerto(final Stage primaryStage) {
+        FileChooser fileChooser = new FileChooser();
+
+        //Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Concerto campane sistema veronese (*.csvc)", "*.csvc");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        //Show save file dialog
+        File file = fileChooser.showSaveDialog(primaryStage);
+        
+        if (file != null) {
+            SaveFile(file);
+        }
+    }
+
+    private void SaveFile(File file) {
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(new FileOutputStream(file));
+            oos.writeObject(this);
+            oos.close();
+        } catch (IOException e) {
+            System.err.println(e.toString());
+        } 
+        System.out.println("Salvataggio completato");        
+    }
+
     /**
      * @return the nomeConcerto
      */
@@ -96,6 +128,5 @@ public class ModelConcerto implements Serializable{
     public void setListaCampane(List<ModelCampana> listaCampane) {
         this.listaCampane = listaCampane;
     }
-    
-    
+
 }

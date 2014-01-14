@@ -78,7 +78,7 @@ public class ModelCampana implements Serializable {
 
         oos.write(buf);
 
-        //System.out.println(buf.length);
+        System.out.println("Lunghezza salvataggio: " + buf.length);
     }
 
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -94,9 +94,9 @@ public class ModelCampana implements Serializable {
 
         buf = bos.toByteArray();
         
-        //System.err.println(buf.length);
+        System.err.println("Lunghezza lettura: " + buf.length);
 
-        File temp = File.createTempFile("tempfile", ".mp3");
+        File temp = File.createTempFile("tempfile", ".wav");
         FileOutputStream fos = new FileOutputStream(temp.getAbsolutePath());
         fos.write(buf);
         fos.close();

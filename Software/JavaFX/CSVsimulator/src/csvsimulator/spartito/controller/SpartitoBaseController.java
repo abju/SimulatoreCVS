@@ -5,11 +5,15 @@
  */
 package csvsimulator.spartito.controller;
 
+import com.sun.javafx.css.BorderPaint;
 import csvsimulator.model.ModelBattuta;
 import csvsimulator.model.ModelConcerto;
 import csvsimulator.navbar.controller.NavbarBaseController;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -20,6 +24,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
@@ -29,12 +34,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.media.AudioClip;
+import javafx.stage.FileChooser;
 
 /**
  *
  * @author lion
  */
 public class SpartitoBaseController extends BorderPane implements Initializable {
+
+    private BorderPane mainBorderPain;
 
     @FXML
     private TextField nuovaBattuta;
@@ -56,22 +64,12 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
 
     public SpartitoBaseController() {
         init();
+        //this.modelConcerto = loadModelConcerto();
     }
 
-    public SpartitoBaseController(ModelConcerto modelConcerto, NavbarBaseController navbar, BorderPane leftBar) {
+    public SpartitoBaseController(ModelConcerto modelConcerto) {
         init();
         this.modelConcerto = modelConcerto;
-        this.navbar = navbar;
-        this.leftBar = leftBar;
-
-        this.navbar.setUpNavSpartito(this);
-        this.spartitoPentagramma.getModelSuonata().setConcerto(modelConcerto);
-        this.spartitoPentagramma.setSpartitoBaseController(this);
-
-        this.optionBar = new SpartitoOptionBarController(this, this.spartitoPentagramma);
-        this.leftBar.setCenter(this.optionBar);
-        this.optionBar.getPaneBattutaNonSelezionata().setVisible(true);
-        this.optionBar.getPaneBattutaSelezionata().setVisible(false);
     }
 
     private void init() {
@@ -84,6 +82,50 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+
+        this.navbar = new NavbarBaseController();
+        setTop(this.navbar);
+        this.navbar.setUpNavSpartito(this);
+
+        this.optionBar = new SpartitoOptionBarController(this, this.spartitoPentagramma);
+        setLeft(this.optionBar);
+
+        
+        this.spartitoPentagramma.setSpartitoBaseController(this);
+
+        this.optionBar.getPaneBattutaNonSelezionata().setVisible(true);
+        this.optionBar.getPaneBattutaSelezionata().setVisible(false);
+    }
+
+    public ModelConcerto loadModelConcerto() {
+        ModelConcerto concerto = null;
+
+        FileChooser fileChooser = new FileChooser();
+
+        //Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Concerto campane sistema veronese (*.csvc)", "*.csvc");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        //Show save file dialog
+        File file = fileChooser.showOpenDialog(((Node)this).getScene().getWindow());
+        if (file == null) {
+            //stage.close();
+            System.exit(0);
+        }
+        String path = file.getAbsolutePath();
+
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(path));
+            concerto = (ModelConcerto) ois.readObject();
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
+        } catch (ClassNotFoundException e) {
+        }
+
+        
+
+        return concerto;
     }
 
     @Override
@@ -139,8 +181,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
 
     /*METODI PRIVATI*/
     private void addBattuta(final ModelBattuta mb) {
-              
-        
+
         //mb.play(modelConcerto);
         Label label = new Label(mb.getNomeBattuta(modelConcerto));
         label.setMaxWidth(USE_PREF_SIZE);
@@ -194,6 +235,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
      */
     public void setModelConcerto(ModelConcerto modelConcerto) {
         this.modelConcerto = modelConcerto;
+        this.spartitoPentagramma.getModelSuonata().setConcerto(this.modelConcerto);
     }
 
     /**

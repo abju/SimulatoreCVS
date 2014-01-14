@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.*?>
 <?import jfxtras.labs.scene.control.* ?>
 
-<fx:root type="javafx.scene.layout.BorderPane" id="main" prefHeight="760.0" prefWidth="300.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<fx:root type="javafx.scene.layout.BorderPane" id="main" minHeight="-1.0" minWidth="300.0" prefHeight="760.0" prefWidth="300.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
   <center>
     <ScrollPane fx:id="OtpionBarScroll" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0">
       <content>
@@ -21,7 +21,7 @@
                   <children>
                     <GridPane hgap="5.0" layoutX="0.0" layoutY="0.0" prefHeight="100.0" prefWidth="293.0" vgap="5.0">
                       <children>
-                        <BigDecimalField fx:id="tempoSuonata" prefWidth="200.0" GridPane.columnIndex="6" GridPane.columnSpan="4" GridPane.rowIndex="0" stepwidth="0.01"/>
+                        <BigDecimalField fx:id="tempoSuonata" prefWidth="200.0" GridPane.columnIndex="6" GridPane.columnSpan="4" GridPane.rowIndex="0" stepwidth="0.01" />
                         <Label text="Tempo suonata (sec)" GridPane.columnIndex="0" GridPane.columnSpan="6" GridPane.rowIndex="0" />
                       </children>
                       <columnConstraints>

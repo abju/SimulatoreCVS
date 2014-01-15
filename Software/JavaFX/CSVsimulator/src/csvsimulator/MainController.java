@@ -59,6 +59,8 @@ public class MainController extends BorderPane implements Initializable {
     
     public MainController(){
         init();
+        CampanileNuovoController cnc = new CampanileNuovoController();
+        main.setCenter(cnc);
     }
     
     @Override

@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  *
@@ -74,7 +75,7 @@ public class ModelConcerto implements Serializable {
         return false;
     }
 
-    public void saveFileConcerto(final Stage primaryStage) {
+    public void saveFileConcerto(final Window w) {
         FileChooser fileChooser = new FileChooser();
 
         //Set extension filter
@@ -82,7 +83,7 @@ public class ModelConcerto implements Serializable {
         fileChooser.getExtensionFilters().add(extFilter);
 
         //Show save file dialog
-        File file = fileChooser.showSaveDialog(primaryStage);
+        File file = fileChooser.showSaveDialog(w);
         
         if (file != null) {
             SaveFile(file);

@@ -24,11 +24,14 @@
 package csvsimulator.campanile.controller;
 
 import csvsimulator.model.ModelCampana;
+import global.AlertDialog;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -39,6 +42,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -51,6 +55,8 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
     private HBox main;
     @FXML
     private TextField tfNomeCampana;
+    public static final int maxLength = 2;
+
     @FXML
     private Button btnBrowse;
     @FXML
@@ -99,6 +105,16 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
         }
 
         mb = new ModelCampana();
+
+        tfNomeCampana.textProperty().addListener(new ChangeListener<String>() {
+
+            @Override
+            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
+                if (t1.length() > maxLength) {
+                    tfNomeCampana.setText(t);
+                }
+            }
+        });
     }
 
     @FXML
@@ -107,8 +123,8 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
 
         fileChooser.setTitle("Seleziona il file audio della campana");
 
-        if (file != null) {
-            File existDirectory = file.getParentFile();
+        if (getFile() != null) {
+            File existDirectory = getFile().getParentFile();
             fileChooser.setInitialDirectory(existDirectory);
         } else {
             fileChooser.setInitialDirectory(
@@ -127,14 +143,16 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
             lblPathFile.setText(file.getAbsolutePath());
             this.file = file;
         } else {
-            lblPathFile.setText("");
-            this.file = null;
+            if (getFile() != null) {
+                lblPathFile.setText("");
+                this.file = null;
+            }
         }
     }
 
     @FXML
     private void previewAction(ActionEvent event) {
-        if (file != null) {
+        if (getFile() != null) {
             getMb().play();
         }
     }
@@ -148,18 +166,53 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
      * @return the mb
      */
     public ModelCampana getMb() {
-        if (tfNomeCampana.getText() != "") {
-            mb.setNome(tfNomeCampana.getText());
-        } else {
-            mb.setNome("");
+        if (validate()) {
+            mb.setNome(tfNomeCampana.getText().trim());
+            mb.setNumero(getNumero());
+            mb.loadFromPath(getFile().getAbsolutePath());
+            return mb;
         }
-
-        mb.setNumero(numero);
-        mb.loadFromPath(file.getAbsolutePath());
-        return mb;
+        return null;
     }
 
-    private boolean validateNomeCampana() {
+    private boolean validate() {
+        if(tfNomeCampana.getText().trim().equals("")){
+            new AlertDialog((Stage)this.getScene().getWindow(), "La campana numero " + numero + " non ha un nome valido.", AlertDialog.ICON_ERROR).showAndWait();
+            return false;
+        }
+        if(getFile() == null){
+            new AlertDialog((Stage)this.getScene().getWindow(), "La campana numero " + numero + " non ha file audio valido.", AlertDialog.ICON_ERROR).showAndWait();
+            return false;
+        }
         return true;
+    }
+
+    /**
+     * @return the file
+     */
+    public File getFile() {
+        if (file != null) {
+            File f = new File(file.toURI());
+            if (f.isFile()) {
+                return file;
+            }
+        }
+        file = null;
+        lblPathFile.setText("");
+        return null;
+    }
+
+    /**
+     * @return the numero
+     */
+    public Integer getNumero() {
+        return numero;
+    }
+
+    /**
+     * @param numero the numero to set
+     */
+    public void setNumero(Integer numero) {
+        this.numero = numero;
     }
 }

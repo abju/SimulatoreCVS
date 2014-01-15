@@ -3,6 +3,7 @@ package csvsimulator.campanile.controller;
 import csvsimulator.model.ModelCampana;
 import csvsimulator.model.ModelConcerto;
 import global.AlertDialog;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
     private TextField txtNomeConcerto;
 
     private List<ModelCampana> listModelCampana;
+    
+    private File lastChooserFolder; 
 
     public CampanileNuovoController() {
         init();
@@ -63,6 +66,7 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
         }
 
         listModelCampana = new ArrayList<>();
+        lastChooserFolder = null;
     }
 
     @FXML
@@ -93,7 +97,7 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
         }
         
         if (valid) {
-            mc.saveFileConcerto(((Node) this).getScene().getWindow());
+            mc.saveFileConcerto(((Node) this).getScene().getWindow(), lastChooserFolder);
         }
     }
 
@@ -105,6 +109,20 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
             CampanileNuovoFieldsetController cnf = (CampanileNuovoFieldsetController) it.next();
             cnf.setNumero(it.nextIndex() - 1);
         }
+    }
+
+    /**
+     * @return the lastChooserFolder
+     */
+    public File getLastChooserFolder() {
+        return lastChooserFolder;
+    }
+
+    /**
+     * @param lastChooserFolder the lastChooserFolder to set
+     */
+    public void setLastChooserFolder(File lastChooserFolder) {
+        this.lastChooserFolder = lastChooserFolder;
     }
 
 }

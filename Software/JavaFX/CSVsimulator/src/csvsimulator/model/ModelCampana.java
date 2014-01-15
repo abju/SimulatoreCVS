@@ -59,6 +59,7 @@ public class ModelCampana implements Serializable {
     }
 
     private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.writeLong(serialVersionUID);
         oos.writeObject(nome);
         oos.writeInt(numero);
 
@@ -82,14 +83,13 @@ public class ModelCampana implements Serializable {
     }
 
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        long versione = (Long) ois.readLong();
         nome = (String) ois.readObject();
         numero = ois.readInt();
         byte[] buf = new byte[1024];
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         for (int readNum; (readNum = ois.read(buf)) != -1;) {
             bos.write(buf, 0, readNum); //no doubt here is 0
-            //Writes len bytes from the specified byte array starting at offset off to this byte array output stream.
-            //System.out.println("read " + readNum + " bytes,");
         }
 
         buf = bos.toByteArray();

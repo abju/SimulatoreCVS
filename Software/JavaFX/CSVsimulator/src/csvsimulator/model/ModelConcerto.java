@@ -75,16 +75,18 @@ public class ModelConcerto implements Serializable {
         return false;
     }
 
-    public void saveFileConcerto(final Window w) {
+    public void saveFileConcerto(final Window w, File dir) {
         FileChooser fileChooser = new FileChooser();
-
+        if (dir != null) {
+            fileChooser.setInitialDirectory(dir);
+        }
         //Set extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Concerto campane sistema veronese (*.csvc)", "*.csvc");
         fileChooser.getExtensionFilters().add(extFilter);
 
         //Show save file dialog
         File file = fileChooser.showSaveDialog(w);
-        
+
         if (file != null) {
             SaveFile(file);
         }
@@ -98,8 +100,8 @@ public class ModelConcerto implements Serializable {
             oos.close();
         } catch (IOException e) {
             System.err.println(e.toString());
-        } 
-        System.out.println("Salvataggio completato");        
+        }
+        System.out.println("Salvataggio completato");
     }
 
     /**

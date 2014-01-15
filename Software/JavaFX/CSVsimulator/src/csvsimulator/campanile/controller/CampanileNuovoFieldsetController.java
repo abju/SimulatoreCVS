@@ -126,6 +126,8 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
         if (getFile() != null) {
             File existDirectory = getFile().getParentFile();
             fileChooser.setInitialDirectory(existDirectory);
+        } else if(parentController.getLastChooserFolder() != null){
+            fileChooser.setInitialDirectory(parentController.getLastChooserFolder());
         } else {
             fileChooser.setInitialDirectory(
                     new File(System.getProperty("user.home"))
@@ -142,8 +144,9 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
         if (file != null) {
             lblPathFile.setText(file.getAbsolutePath());
             this.file = file;
+            parentController.setLastChooserFolder(file.getParentFile());
         } else {
-            if (getFile() != null) {
+            if (getFile() == null) {
                 lblPathFile.setText("");
                 this.file = null;
             }
@@ -154,6 +157,8 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
     private void previewAction(ActionEvent event) {
         if (getFile() != null) {
             getMb().play();
+        } else {
+            new AlertDialog((Stage)this.getScene().getWindow(), "La campana numero " + numero + " non ha file audio valido.", AlertDialog.ICON_ERROR).showAndWait();
         }
     }
 
@@ -213,6 +218,7 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
      * @param numero the numero to set
      */
     public void setNumero(Integer numero) {
+        lblNumeroCampana.setText((numero+1) + "");
         this.numero = numero;
     }
 }

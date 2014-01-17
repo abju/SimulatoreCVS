@@ -2,6 +2,7 @@ package csvsimulator.campanile.controller;
 
 import csvsimulator.model.ModelCampana;
 import csvsimulator.model.ModelConcerto;
+import csvsimulator.spartito.controller.SpartitoBaseController;
 import global.AlertDialog;
 import java.io.File;
 import java.io.IOException;
@@ -35,18 +36,19 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
     @FXML
     private Button btnSalvaConcerto;
     @FXML
+    private Button btnProvaSenzaSalvare;
+    @FXML
+    private Button btnProvaSalva;
+    @FXML
     private VBox listCampane;
     @FXML
     private TextField txtNomeConcerto;
-
-    private List<ModelCampana> listModelCampana;
     
     private File lastChooserFolder; 
 
     public CampanileNuovoController() {
         init();
         listCampane.getChildren().add(new CampanileNuovoFieldsetController(this, 1));
-        //listCampane.getChildren().add(fieldsetNuovaCampana);
     }
 
     @Override
@@ -65,7 +67,6 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
             throw new RuntimeException(exception);
         }
 
-        listModelCampana = new ArrayList<>();
         lastChooserFolder = null;
     }
 
@@ -76,28 +77,29 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
 
     @FXML
     private void salvaConcertoAction(ActionEvent event) {
-        boolean valid = true;
-        ModelConcerto mc = new ModelConcerto();
+        ModelConcerto mc = getConcertoCreato();
         
-        if (!txtNomeConcerto.getText().trim().equals("")) {
-            mc.setNomeConcerto(txtNomeConcerto.getText().trim());
-            for (ListIterator<Node> it = listCampane.getChildren().listIterator(); it.hasNext();) {
-                CampanileNuovoFieldsetController cnf = (CampanileNuovoFieldsetController) it.next();
-                ModelCampana campana = cnf.getMb();
-                if (campana != null) {
-                    mc.pushCampana(cnf.getMb());
-                } else {
-                    valid = false;
-                    break;
-                }
-            }
-        } else {
-            new AlertDialog((Stage) this.getScene().getWindow(), "Il nome del concerto non può essere vuoto", AlertDialog.ICON_ERROR).showAndWait();
-            valid = false;
+        if (mc != null) {
+            salvaConcerto(mc);
         }
+    }
+    
+    @FXML
+    private void provaSalvaAction(ActionEvent event) {
+        ModelConcerto mc = getConcertoCreato();
         
-        if (valid) {
-            mc.saveFileConcerto(((Node) this).getScene().getWindow(), lastChooserFolder);
+        if (mc != null) {
+            salvaConcerto(mc);
+            apriCreaSuonata(mc);
+        }
+    }
+    
+    @FXML
+    private void provaSenzaSalvareAction(ActionEvent event) {
+        ModelConcerto mc = getConcertoCreato();
+        
+        if (mc != null) {
+            apriCreaSuonata(mc);
         }
     }
 
@@ -125,4 +127,36 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
         this.lastChooserFolder = lastChooserFolder;
     }
 
+    
+    private ModelConcerto getConcertoCreato(){
+        ModelConcerto mc = new ModelConcerto();
+        
+        if (!txtNomeConcerto.getText().trim().equals("")) {
+            mc.setNomeConcerto(txtNomeConcerto.getText().trim());
+            for (ListIterator<Node> it = listCampane.getChildren().listIterator(); it.hasNext();) {
+                CampanileNuovoFieldsetController cnf = (CampanileNuovoFieldsetController) it.next();
+                ModelCampana campana = cnf.getMb();
+                if (campana != null) {
+                    mc.pushCampana(cnf.getMb());
+                } else {
+                    return null;
+                }
+            }
+        } else {
+            new AlertDialog((Stage) this.getScene().getWindow(), "Il nome del concerto non può essere vuoto", AlertDialog.ICON_ERROR).showAndWait();
+            return null;
+        }
+        
+        return mc;
+    }
+    
+    private void salvaConcerto(ModelConcerto mc) {
+        mc.saveFileConcerto(((Node) this).getScene().getWindow(), lastChooserFolder);
+    }
+    
+    private void apriCreaSuonata(ModelConcerto mc){
+        SpartitoBaseController sbc = new SpartitoBaseController();
+        ((BorderPane)this.getParent()).setCenter(sbc);
+        sbc.setModelConcerto(mc);
+    }
 }

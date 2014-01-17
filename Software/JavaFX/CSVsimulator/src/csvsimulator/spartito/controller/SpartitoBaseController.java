@@ -5,7 +5,6 @@
  */
 package csvsimulator.spartito.controller;
 
-import com.sun.javafx.css.BorderPaint;
 import csvsimulator.model.ModelBattuta;
 import csvsimulator.model.ModelConcerto;
 import csvsimulator.navbar.controller.NavbarBaseController;
@@ -14,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
@@ -33,7 +31,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
-import javafx.scene.media.AudioClip;
 import javafx.stage.FileChooser;
 
 /**

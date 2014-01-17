@@ -43,6 +43,8 @@
               <children>
                 <Button fx:id="btnAggiungiCampana" mnemonicParsing="false" onAction="#aggiungiCampanaAction" text="Aggiungi Campana" />
                 <Button fx:id="btnSalvaConcerto" mnemonicParsing="false" onAction="#salvaConcertoAction" text="Salva Concerto" />
+                <Button fx:id="btnProvaSalva" mnemonicParsing="false" onAction="#provaSalvaAction" text="Salva e prova" />
+                <Button fx:id="btnProvaSenzaSalvare" mnemonicParsing="false" onAction="#provaSenzaSalvareAction" text="Prova senza salvare" />
               </children>
             </HBox>
           </children>

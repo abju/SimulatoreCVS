@@ -24,6 +24,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -40,16 +41,16 @@ import javafx.stage.FileChooser;
 public class SpartitoBaseController extends BorderPane implements Initializable {
 
     private BorderPane mainBorderPain;
-
     @FXML
     private TextField nuovaBattuta;
-
     @FXML
     private SplitPane divisore;
-
     @FXML
-    private TilePane elenco_battute; //Traformare in TilePane
-
+    private TilePane elenco_battute;
+    @FXML
+    private ScrollPane scrollSpartito;
+    @FXML
+    private ScrollPane scrollPentagramma;
     @FXML
     private SpartitoPentagrammaController spartitoPentagramma;
 
@@ -169,6 +170,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
 
                 if (battutaValida) {
                     this.addBattuta(md);
+                    
                 }
 
             }
@@ -200,10 +202,13 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         elenco_battute.getChildren().add(elenco_battute.getChildren().size() - 1, label);
 
         //Ridisegna cosi posso avere le coordinate deve essere fatto proprio alla fine
-        elenco_battute.layout();
+        scrollSpartito.layout();        
+        scrollSpartito.setVvalue(nuovaBattuta.getLayoutY());
+        
         getSpartitoPentagramma().setBattutePerRiga(getColumns());
         getSpartitoPentagramma().pushBattuta(mb, label);
 
+        
     }
 
     public void popBattuta() {
@@ -289,6 +294,20 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
      */
     public void setOptionBar(SpartitoOptionBarController optionBar) {
         this.optionBar = optionBar;
+    }
+
+    /**
+     * @return the scrollPentagramma
+     */
+    public ScrollPane getScrollPentagramma() {
+        return scrollPentagramma;
+    }
+
+    /**
+     * @param scrollPentagramma the scrollPentagramma to set
+     */
+    public void setScrollPentagramma(ScrollPane scrollPentagramma) {
+        this.scrollPentagramma = scrollPentagramma;
     }
 
 }

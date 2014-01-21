@@ -54,8 +54,7 @@ public class ButtonsGroupController extends BorderPane implements Initializable 
     public void playerGroup(final SpartitoBaseController obj) {
         nome_gruppo.setText("Player");
         final Player player = new Player();
-        BottoneGenericoController btng = new BottoneGenericoController();
-        btng.getButton_label().setText("Play");
+        BottoneGenericoController btng = new BottoneGenericoController("Play", getClass().getResourceAsStream("/csvsimulator/navbar/images/player_play.png"));
         btng.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             @Override
@@ -72,8 +71,7 @@ public class ButtonsGroupController extends BorderPane implements Initializable 
         });
         buttons_space.getChildren().add(btng);
 
-        btng = new BottoneGenericoController();
-        btng.getButton_label().setText("Pausa");
+        btng = new BottoneGenericoController("Pausa", getClass().getResourceAsStream("/csvsimulator/navbar/images/player_pause.png"));
         btng.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             @Override
@@ -85,8 +83,7 @@ public class ButtonsGroupController extends BorderPane implements Initializable 
         });
         buttons_space.getChildren().add(btng);
 
-        btng = new BottoneGenericoController();
-        btng.getButton_label().setText("Stop");
+        btng = new BottoneGenericoController("Stop", getClass().getResourceAsStream("/csvsimulator/navbar/images/player_stop.png"));
         btng.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             @Override

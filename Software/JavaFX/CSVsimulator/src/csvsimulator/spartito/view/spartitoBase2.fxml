@@ -12,7 +12,7 @@
   <center>
     <SplitPane id="splitPane" fx:id="divisore" dividerPositions="0.5527704485488126" focusTraversable="true" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
       <items>
-        <ScrollPane fitToHeight="true" fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" visible="true">
+        <ScrollPane fx:id="scrollSpartito" fitToHeight="true" fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" visible="true">
           <content>
             <TilePane fx:id="elenco_battute" alignment="TOP_LEFT" cache="false" depthTest="INHERIT" hgap="0.0" mouseTransparent="false" orientation="HORIZONTAL" prefHeight="-1.0" prefWidth="703.0" tileAlignment="TOP_LEFT" vgap="5.0">
               <children>
@@ -24,7 +24,7 @@
             </TilePane>
           </content>
         </ScrollPane>
-        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" prefHeight="200.0" prefWidth="200.0" vbarPolicy="NEVER">
+        <ScrollPane fx:id="scrollPentagramma" fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" prefHeight="200.0" prefWidth="200.0" vbarPolicy="NEVER">
           <content>
             <BorderPane fx:id="borderBottom" prefHeight="-1.0" prefWidth="703.0">
               <center>

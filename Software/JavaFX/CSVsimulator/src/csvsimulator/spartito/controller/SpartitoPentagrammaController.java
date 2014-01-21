@@ -108,6 +108,7 @@ public class SpartitoPentagrammaController extends AnchorPane {
         final Integer numero_battuta = getModelSuonata().pushBattuta(mb);
 
         Group campaneBattuta = new Group();
+        Double lastX = 0.0;
         for (final Integer numeroCampana : mb.getListaCampane().keySet()) {
 
             Double timeCampana = getModelSuonata().getTimeCampana(numero_battuta, numeroCampana);
@@ -118,12 +119,15 @@ public class SpartitoPentagrammaController extends AnchorPane {
             c.setCenterY((Double) position.get("y"));
             campaneBattuta.getChildren().add(c);
 
+            lastX = ((Double) position.get("x")) + 150.0;
         }
 
-        rigaPentagramma.getChildren().add(campaneBattuta);
+        rigaPentagramma.getChildren().add(campaneBattuta);        
         battute.add(campaneBattuta);
 
         refreshPosizioneCampane();
+        spartitoBaseController.getScrollPentagramma().layout();        
+        spartitoBaseController.getScrollPentagramma().setHvalue(lastX);
     }
 
     public void popBattuta() {

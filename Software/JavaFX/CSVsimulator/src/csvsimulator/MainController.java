@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package csvsimulator;
 
 import csvsimulator.campanile.controller.CampanileNuovoController;
+import csvsimulator.model.ModelConcerto;
 import csvsimulator.navbar.controller.NavbarBaseController;
 import csvsimulator.spartito.controller.SpartitoBaseController;
 import java.io.IOException;
@@ -43,6 +43,7 @@ import javafx.scene.layout.BorderPane;
  * @author Marco Dalla Riva <marco.dallariva@outlook.com>
  */
 public class MainController extends BorderPane implements Initializable {
+
     @FXML
     private BorderPane main;
     @FXML
@@ -56,19 +57,18 @@ public class MainController extends BorderPane implements Initializable {
     @FXML
     private MenuItem help_about;
 
-    
-    public MainController(){
+    public MainController() {
         init();
         //CampanileNuovoController cnc = new CampanileNuovoController();
         //main.setCenter(cnc);
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+
     }
-    
-    private void init(){
+
+    private void init() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/csvsimulator/main.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -79,20 +79,33 @@ public class MainController extends BorderPane implements Initializable {
             throw new RuntimeException(exception);
         }
     }
-    
+
     /* FXML ACTION */
     @FXML
     private void nuovoConcertoAction(ActionEvent event) {
-        CampanileNuovoController cnc = new CampanileNuovoController();
-        main.setCenter(cnc);
+        apriNuovoConcerto();
     }
 
     @FXML
     private void nuovaSuonataAction(ActionEvent event) {
-        SpartitoBaseController sbc = new SpartitoBaseController();
-        main.setCenter(sbc);
-        sbc.setModelConcerto(sbc.loadModelConcerto());
+        apriNuovaSuonata(null);
     }
-    
-    
+
+    public void apriNuovoConcerto() {
+        CampanileNuovoController cnc = new CampanileNuovoController();
+        main.setCenter(cnc);
+    }
+
+    public void apriNuovaSuonata(ModelConcerto mc) {
+        SpartitoBaseController sbc = new SpartitoBaseController();
+        if (mc != null) {
+            sbc.setModelConcerto(mc);
+        }
+        main.setCenter(sbc);
+        if (mc == null) {
+            sbc.setModelConcerto(sbc.loadModelConcerto());
+        }
+
+    }
+
 }

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="crea_setup_simulatore" default="main" basedir=".">
+    <!-- INCLUDO I PROPERTIES FILE -->
+    <loadproperties srcFile="project.properties"/>
+    <loadproperties srcFile="launch4j.properties"/>
+    <loadproperties srcFile="innosetupcompiler.properties"/>
+    
+    <!-- VARIABILI -->
+    <!-- property name="launch4j.dir" location="C:\Program Files (x86)\Launch4j" />
+    <property name="innosetupcompilert.dir" location="C:\Program Files (x86)\Inno Setup 5" / -->
+    
+    <target name="main">
+        <!-- Chiedo il numero della nuova versione -->
+        <input message="A che versione siamo arrivati?" addproperty="versione" />
+        
+        <!-- PASSO 1 creare il file .exe -->
+        <echo>---------------------------------------</echo>
+        <echo>-- PASSO 1 - CREARE .exe CON launc4j --</echo>
+        <antcall target="creare_eseguibile_con_launc4j">
+            <param name="versione" value="${versione}"/>
+        </antcall>
+        
+        <antcall target="creare_installer_con_innosetupcompiler">
+            <param name="versione" value="${versione}"/>
+        </antcall>
+    </target>
+    
+    <target name="creare_eseguibile_con_launc4j">
+        <property name="exe_name" value="simulatore_campane_${versione}.exe" />
+        
+        <taskdef name="launch4j" 
+                 classname="net.sf.launch4j.ant.Launch4jTask"
+                 classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+        <launch4j configFile="${launch4j.config}" 
+                 jar="${launch4j.jar}"
+                 outfile="${launch4j.dirOutput}/${exe_name}" />
+
+    </target>
+    
+    <target name="creare_installer_con_innosetupcompiler">
+        <property name="exe_name" value="simulatore_campane_${versione}.exe" />
+        <property name="setup_name" value="simulatore_campane_${versione}_setup" />
+        
+        <exec executable="${innosetupcompiler.dir}">
+            <arg value="${innosetupcompiler.config}" />
+            <arg value="/dMyAppExeName=${exe_name}" />
+            <arg value="/dPathToSource=${launch4j.dirOutput}/${exe_name}" />
+            <arg value="/dMyAppVersion=${versione}" />
+            <arg value="/dDirOutput=${innosetupcompiler.dirOutput}" />
+            <arg value="/dOutputName=${setup_name}" />
+        </exec>
+        <!--copy file="ProtexSetup.exe" todir="./bin"/-->
+    </target>
+
+</project>

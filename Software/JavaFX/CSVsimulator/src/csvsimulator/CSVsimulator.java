@@ -4,18 +4,18 @@
  */
 package csvsimulator;
 
-import csvsimulator.model.ModelCampana;
 import csvsimulator.model.ModelConcerto;
-import csvsimulator.spartito.controller.SpartitoBaseController;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.ObjectInputStream;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.FileChooser;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.annotation.Arg;
+import net.sourceforge.argparse4j.inf.ArgumentParser;
+import net.sourceforge.argparse4j.inf.ArgumentParserException;
 
 /**
  *
@@ -23,10 +23,39 @@ import javafx.stage.Stage;
  */
 public class CSVsimulator extends Application {
 
+    private static class Option {
+
+        @Arg(dest = "filename")
+        public String filename;
+
+    }
+
+    private static Option optArgs;
+
     @Override
     public void start(Stage stage) throws Exception {
         
+        stage.getIcons().add(new Image(CSVsimulator.class.getResourceAsStream( "myBell.png" )));
+        stage.setTitle("Simulatore di Concerti di Campane a Sistema Veronese");
+        
         MainController root = new MainController();
+        if (optArgs.filename != null) {
+            ModelConcerto mc = new ModelConcerto();
+            File file = new File(optArgs.filename);
+            String path = file.getAbsolutePath();
+
+            ObjectInputStream ois;
+            try {
+                ois = new ObjectInputStream(new FileInputStream(path));
+                mc = (ModelConcerto) ois.readObject();
+            } catch (ClassNotFoundException ex) {
+                System.err.println(ex.toString());
+            }
+            root.apriNuovaSuonata(mc);
+        }
+        
+        
+        
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
@@ -42,6 +71,15 @@ public class CSVsimulator extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        optArgs = new Option();
+
+        try {
+            ArgumentParser parser = ArgumentParsers.newArgumentParser("prog");
+            parser.addArgument("--filename").required(false);
+            parser.parseArgs(args, optArgs);
+        } catch (ArgumentParserException ex) {
+
+        }
         launch(args);
     }
 }

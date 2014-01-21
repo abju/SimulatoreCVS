@@ -52,6 +52,8 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     @FXML
     private ScrollPane scrollPentagramma;
     @FXML
+    private BorderPane bpPentagramma;
+    
     private SpartitoPentagrammaController spartitoPentagramma;
 
     private ModelConcerto modelConcerto;
@@ -68,6 +70,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     public SpartitoBaseController(ModelConcerto modelConcerto) {
         init();
         this.modelConcerto = modelConcerto;
+        this.spartitoPentagramma.setSpartitoBaseController(this);
     }
 
     private void init() {
@@ -81,15 +84,14 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
             throw new RuntimeException(exception);
         }
 
+        this.spartitoPentagramma = new SpartitoPentagrammaController();
+        bpPentagramma.setCenter(this.spartitoPentagramma);
         this.navbar = new NavbarBaseController();
         setTop(this.navbar);
         this.navbar.setUpNavSpartito(this);
 
         this.optionBar = new SpartitoOptionBarController(this, this.spartitoPentagramma);
         setLeft(this.optionBar);
-
-        
-        this.spartitoPentagramma.setSpartitoBaseController(this);
 
         this.optionBar.getPaneBattutaNonSelezionata().setVisible(true);
         this.optionBar.getPaneBattutaSelezionata().setVisible(false);
@@ -237,6 +239,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
      */
     public void setModelConcerto(ModelConcerto modelConcerto) {
         this.modelConcerto = modelConcerto;
+        this.spartitoPentagramma.setSpartitoBaseController(this);
         this.spartitoPentagramma.getModelSuonata().setConcerto(this.modelConcerto);
     }
 

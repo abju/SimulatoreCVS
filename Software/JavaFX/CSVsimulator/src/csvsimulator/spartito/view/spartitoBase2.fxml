@@ -26,9 +26,9 @@
         </ScrollPane>
         <ScrollPane fx:id="scrollPentagramma" fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" prefHeight="200.0" prefWidth="200.0" vbarPolicy="NEVER">
           <content>
-            <BorderPane fx:id="borderBottom" prefHeight="-1.0" prefWidth="703.0">
+            <BorderPane fx:id="bpPentagramma" prefHeight="-1.0" prefWidth="703.0">
               <center>
-                <csvsimulator.spartito.controller.SpartitoPentagrammaController fx:id="spartitoPentagramma" />
+                
               </center>
             </BorderPane>
           </content>

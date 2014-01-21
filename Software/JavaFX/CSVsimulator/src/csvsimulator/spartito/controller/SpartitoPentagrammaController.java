@@ -53,10 +53,12 @@ public class SpartitoPentagrammaController extends AnchorPane {
         rigaPentagramma = new Group();
         rigaPentagrammaLinee = new Group();
 
-        initRigaPentagramma();
+        
     }
 
     private void initRigaPentagramma() {
+        ncampane = spartitoBaseController.getModelConcerto().getListaCampane().size();
+        System.err.println("numero campane " + ncampane);
         int nlinee = ncampane / 2;
         for (int i = 0; i < nlinee; i++) {
             Line line = new Line(0, dimensioneNote * i + dimensioneNote, 0, dimensioneNote * i + dimensioneNote);
@@ -93,7 +95,10 @@ public class SpartitoPentagrammaController extends AnchorPane {
     public Map<String, Object> getPositionCampana(Double timeCampana, Integer numero_campana) {
         Map<String, Object> r = new HashMap<>();
         double x = tempoSuonataUnit * timeCampana / getModelSuonata().getTempoSuonata() + tempoSuonataUnit / 2;
-        double y = dimensioneNote + (dimensioneNote * (ncampane / 2 - 1)) + dimensioneNote / 2 - numero_campana * dimensioneNote / 2;
+        double y = dimensioneNote + (dimensioneNote * (ncampane / 2 - 1)) + dimensioneNote - numero_campana * dimensioneNote / 2;
+        if(ncampane % 2 == 0){
+            y -= dimensioneNote/2;
+        }
 
         r.put("y", y);
         r.put("x", x);
@@ -220,5 +225,6 @@ public class SpartitoPentagrammaController extends AnchorPane {
      */
     public void setSpartitoBaseController(SpartitoBaseController spartitoBaseController) {
         this.spartitoBaseController = spartitoBaseController;
+        initRigaPentagramma();
     }
 }

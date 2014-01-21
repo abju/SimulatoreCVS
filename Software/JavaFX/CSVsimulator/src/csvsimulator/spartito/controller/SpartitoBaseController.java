@@ -44,7 +44,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     @FXML
     private TextField nuovaBattuta;
     @FXML
-    private SplitPane divisore;
+    private SplitPane divisore; 
     @FXML
     private TilePane elenco_battute;
     @FXML
@@ -120,6 +120,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
             concerto = (ModelConcerto) ois.readObject();
         } catch (FileNotFoundException e) {
         } catch (IOException e) {
+            
         } catch (ClassNotFoundException e) {
         }
 

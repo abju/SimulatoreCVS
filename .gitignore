@@ -4,8 +4,9 @@
 Software/JavaFX/CSVsimulator/build/
 Software/JavaFX/CSVsimulator/nbproject/UPDATE.TXT
 Software/JavaFX/CSVsimulator/nbproject/private/
-Software/JavaFX/CSVsimulator/nbproject/jfx-impl_backup_
+Software/JavaFX/CSVsimulator/nbproject/jfx-impl_backup_*
 Software/JavaFX/CSVsimulator/dist/
+Software/JavaFX/CSVsimulator/ant/setup/results/
 Setup/*
 
 
@@ -91,39 +92,6 @@ build/
 *.log
 *.scc
 
-# Visual C++ cache files
-ipch/
-*.aps
-*.ncb
-*.opensdf
-*.sdf
-*.cachefile
-
-# Visual Studio profiler
-*.psess
-*.vsp
-*.vspx
-
-# Guidance Automation Toolkit
-*.gpState
-
-# ReSharper is a .NET coding add-in
-_ReSharper*/
-*.[Rr]e[Ss]harper
-
-# TeamCity is a build add-in
-_TeamCity*
-
-# DotCover is a Code Coverage Tool
-*.dotCover
-
-# NCrunch
-*.ncrunch*
-.*crunch*.local.xml
-
-# Installshield output folder
-[Ee]xpress/
-
 # DocProject is a documentation generator add-in
 DocProject/buildhelp/
 DocProject/Help/*.HxT
@@ -192,31 +160,6 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
-# Mac crap
-.DS_Store
-
-
-#############
-## Python
-#############
-
-*.py[co]
-
-# Packages
-*.egg
-*.egg-info
-dist/
-build/
-eggs/
-parts/
-var/
-sdist/
-develop-eggs/
-.installed.cfg
-
-# Installer logs
-pip-log.txt
-
 # Unit test / coverage reports
 .coverage
 .tox
@@ -226,3 +169,7 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+/Software/JavaFX/CSVsimulator/ant/setup/innosetupcompiler.properties
+/Software/JavaFX/CSVsimulator/ant/setup/launch4j.properties
+/Software/JavaFX/CSVsimulator/ant/setup/project.properties

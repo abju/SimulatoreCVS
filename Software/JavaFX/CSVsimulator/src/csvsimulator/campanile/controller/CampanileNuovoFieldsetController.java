@@ -84,6 +84,15 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
         this.parentController = parentController;
         this.file = null;
     }
+    
+    public CampanileNuovoFieldsetController(CampanileNuovoController parentController, File file, Integer numero) {
+        init();
+        lblNumeroCampana.setText((numero+1)+"");
+        this.numero = numero;
+        this.parentController = parentController;
+        this.file = file;
+        lblPathFile.setText(file.getAbsolutePath());
+    }
 
     /**
      * Initializes the controller class.
@@ -155,10 +164,8 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
 
     @FXML
     private void previewAction(ActionEvent event) {
-        if (getFile() != null) {
+        if(getMb() != null){
             getMb().play();
-        } else {
-            new AlertDialog((Stage)this.getScene().getWindow(), "La campana numero " + numero + " non ha file audio valido.", AlertDialog.ICON_ERROR).showAndWait();
         }
     }
 

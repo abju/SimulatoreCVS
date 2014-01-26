@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -21,7 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -48,7 +49,7 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
 
     public CampanileNuovoController() {
         init();
-        listCampane.getChildren().add(new CampanileNuovoFieldsetController(this, 1));
+        //listCampane.getChildren().add(new CampanileNuovoFieldsetController(this, 1));
     }
 
     @Override
@@ -72,7 +73,35 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
 
     @FXML
     private void aggiungiCampanaAction(ActionEvent event) {
-        listCampane.getChildren().add(new CampanileNuovoFieldsetController(this, listCampane.getChildren().size() + 1));
+        FileChooser fileChooser = new FileChooser();
+
+        fileChooser.setTitle("Seleziona il file audio della campana");
+
+        if (lastChooserFolder != null) {
+            File existDirectory = lastChooserFolder.getParentFile();
+            fileChooser.setInitialDirectory(existDirectory);
+        } else {
+            fileChooser.setInitialDirectory(
+                    new File(System.getProperty("user.home"))
+            );
+        }
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("File Audio", "*.wav", "*.mp3"),
+                new FileChooser.ExtensionFilter("WAV", "*.wav"),
+                new FileChooser.ExtensionFilter("MP3", "*.mp3")
+        );
+
+        //Show save file dialog
+        List<File> files = fileChooser.showOpenMultipleDialog(((Node) this).getScene().getWindow());
+        if (files != null) {
+            List<File> clone_files = new ArrayList<>(files);
+            Collections.sort(clone_files, Collections.reverseOrder());
+            for (Iterator<File> it = clone_files.iterator(); it.hasNext();) {
+                File file1 = it.next();
+                listCampane.getChildren().add(new CampanileNuovoFieldsetController(this, file1, listCampane.getChildren().size()));
+            }
+        } 
+        //listCampane.getChildren().add(new CampanileNuovoFieldsetController(this, listCampane.getChildren().size() + 1));
     }
 
     @FXML

@@ -17,7 +17,7 @@
                 <Font name="System Bold" size="25.0" />
               </font>
             </Label>
-            <Label contentDisplay="LEFT" disable="false" maxWidth="875.0" prefWidth="875.0" text="- Per un corretto funzionameto del programma inserire le campane dalla campana minore(la più leggera) alla campana maggiore (la più pesante).&#10;- Per il nome della campana è permesso usare solo numeri e caratteri dalla A alla Z. Ad esclusione della &quot;P&quot; riservata per le pause.&#10;- Il nome della campana può avere al massimo 2 caratteri.&#10;- I file audio consigliato è il WAV, ma anche file audio MP3 sono permessi." textAlignment="LEFT" textOverrun="ELLIPSIS" underline="false" wrapText="true" />
+            <Label contentDisplay="LEFT" disable="false" maxWidth="875.0" prefWidth="875.0" text="- Per un corretto funzionameto del programma inserire le campane dalla campana maggiore (la più pesante) alla campana minore (la più leggera).&#10;- Per il nome della campana è permesso usare solo numeri e caratteri dalla A alla Z. Ad esclusione della &quot;P&quot; riservata per le pause.&#10;- Il nome della campana può avere al massimo 2 caratteri.&#10;- I file audio consigliato è il WAV, ma anche file audio MP3 sono permessi." textAlignment="LEFT" textOverrun="ELLIPSIS" underline="false" wrapText="true" />
             <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
               <children>
                 <Label text="Nome del concerto:" />

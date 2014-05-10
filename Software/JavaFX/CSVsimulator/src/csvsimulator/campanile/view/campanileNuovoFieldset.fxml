@@ -11,9 +11,11 @@
     <Label fx:id="lblNumeroCampana" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" text="" />
     <Label text="Nome:" />
     <TextField fx:id="tfNomeCampana" prefWidth="50.0" text="" />
-    <Label fx:id="lblPathFile" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="400.0" />
+    <Label fx:id="lblPathFile" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="340.0" />
     <Button fx:id="btnBrowse" mnemonicParsing="false" onAction="#browseAction" text="Carica file" />
     <Button fx:id="btnPreview" mnemonicParsing="false" onAction="#previewAction" text="Ascolta" />
     <Button fx:id="btnElimina" mnemonicParsing="false" onAction="#eliminaAction" text="Elimina" />
+    <Button fx:id="btnSu" mnemonicParsing="false" onAction="#suAction" text="S" />
+    <Button fx:id="btnGiu" mnemonicParsing="false" onAction="#giuAction" text="G" />
   </children>
 </fx:root>

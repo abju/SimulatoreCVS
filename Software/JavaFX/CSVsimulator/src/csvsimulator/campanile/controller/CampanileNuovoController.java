@@ -9,10 +9,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,6 +43,10 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
     private Button btnProvaSenzaSalvare;
     @FXML
     private Button btnProvaSalva;
+    @FXML
+    private Button btnSu;
+    @FXML
+    private Button btnGiu;
     @FXML
     private VBox listCampane;
     @FXML
@@ -101,7 +108,6 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
                 listCampane.getChildren().add(new CampanileNuovoFieldsetController(this, file1, listCampane.getChildren().size()));
             }
         } 
-        //listCampane.getChildren().add(new CampanileNuovoFieldsetController(this, listCampane.getChildren().size() + 1));
     }
 
     @FXML
@@ -112,6 +118,8 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
             salvaConcerto(mc);
         }
     }
+    
+    
     
     @FXML
     private void provaSalvaAction(ActionEvent event) {
@@ -139,6 +147,40 @@ public class CampanileNuovoController extends BorderPane implements Initializabl
         for (ListIterator<Node> it = listCampane.getChildren().listIterator(); it.hasNext();) {
             CampanileNuovoFieldsetController cnf = (CampanileNuovoFieldsetController) it.next();
             cnf.setNumero(it.nextIndex() - 1);
+        }
+    }
+    
+    public void abbassaCampanaByObject(CampanileNuovoFieldsetController node) {
+        if(node.getNumero() < listCampane.getChildren().size()-1){
+            CampanileNuovoFieldsetController node2 = (CampanileNuovoFieldsetController)listCampane.getChildren().get(node.getNumero()+1);
+            node.setNumero(node.getNumero()+1);
+            node2.setNumero(node2.getNumero()-1);
+        }       
+        
+        ObservableList<Node> workingCollection = FXCollections.observableArrayList(listCampane.getChildren());
+        Collections.sort(workingCollection, new NodeComparator());
+        listCampane.getChildren().setAll(workingCollection);
+    }
+    
+    public void alzaCampanaByObject(CampanileNuovoFieldsetController node) {
+        if(node.getNumero() > 0){
+            CampanileNuovoFieldsetController node2 = (CampanileNuovoFieldsetController)listCampane.getChildren().get(node.getNumero()-1);
+            node.setNumero(node.getNumero()-1);
+            node2.setNumero(node2.getNumero()+1);
+        }       
+        
+        ObservableList<Node> workingCollection = FXCollections.observableArrayList(listCampane.getChildren());
+        Collections.sort(workingCollection, new NodeComparator());
+        listCampane.getChildren().setAll(workingCollection);
+    }
+    
+    private static class NodeComparator implements Comparator<Node> {
+        @Override
+        public int compare(Node o1, Node o2) {
+            Integer s1 = ((CampanileNuovoFieldsetController) o1).getNumero();
+            Integer s2 = ((CampanileNuovoFieldsetController) o2).getNumero();
+
+            return s1.compareTo(s2);
         }
     }
 

@@ -6,7 +6,9 @@
 package csvsimulator.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -35,8 +37,10 @@ public final class ModelBattuta implements Serializable {
 
     public String getNomeBattuta(ModelConcerto concerto) {
         String nomeBattuta = "";
+        List<Integer> list = new ArrayList<Integer>(listaCampane.keySet());
+        Collections.reverse(list);
 
-        for (Integer numeroCampana : listaCampane.keySet()) {
+        for (Integer numeroCampana : list) {
             if (nomeBattuta.length() > 0) {
                 nomeBattuta += "/";
             }

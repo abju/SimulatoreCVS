@@ -1,8 +1,26 @@
-.battuta {
-    -fx-background-color: #ffffff;
-    -fx-text-fill: #000000;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 2 2 2 2;
-    -fx-text-alignment: center;
+.battuta{
+  -fx-text-fill: #ffffff;
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-padding: 2 2 2 2;
+  -fx-text-alignment: center;
+  
+  -fx-background-color:
+    linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #343534 80%, #242424 100%),
+        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #343534 80%, #262626 100%),
+        linear-gradient(#777777 0%, #606060 50%, #505250 51%, #2a2b2a 100%);
+}
+
+.battuta-active {
+  -fx-font-size: 18px;
+  -fx-padding: 1 2 1 2;
+  -fx-text-fill: #000000;
+  -fx-background-insets: 0,2,2,2;
+  -fx-background-color:
+    linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+    linear-gradient(#020b02, #3a3a3a),
+    linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
+    linear-gradient(#f5f5f5 0%, #dbdbdb 50%, #cacaca 51%, #d7d7d7 100%);
 }

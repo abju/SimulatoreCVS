@@ -2,30 +2,19 @@
 
 <?import java.lang.*?>
 <?import java.net.*?>
-<?import java.util.*?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<fx:root type="javafx.scene.layout.BorderPane" id="main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="90.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
-  <bottom>
-    <Label fx:id="button_label" alignment="CENTER" ellipsisString="" graphicTextGap="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="90.0" text="Prova di un testo molto lungo" textAlignment="CENTER" underline="false" wrapText="true" BorderPane.alignment="CENTER">
-      <font>
-        <Font size="15.0" />
-      </font>
-    </Label>
-  </bottom>
-  <center>
-    <ImageView fx:id="button_icon" fitHeight="45.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-      <BorderPane.margin>
-        <Insets left="5.0" right="5.0" top="0.0" />
-      </BorderPane.margin>
-    </ImageView>
-  </center>
+<fx:root id="main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="36.0" type="javafx.scene.layout.BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
   <stylesheets>
     <URL value="@../css/bottonegenerico.css" />
   </stylesheets>
+<top>
+    <ImageView fx:id="button_icon" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+      <BorderPane.margin>
+        <Insets left="2.0" right="2.0" />
+      </BorderPane.margin>
+    </ImageView>
+</top>
 </fx:root>

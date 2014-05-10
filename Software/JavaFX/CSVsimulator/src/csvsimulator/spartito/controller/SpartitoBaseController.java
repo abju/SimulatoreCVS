@@ -190,6 +190,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         label.setPrefWidth(100);
         label.setMaxWidth(USE_PREF_SIZE);
         label.getStyleClass().add("battuta");
+        //label.getStyleClass().add("battuta-active");
         label.setAlignment(Pos.CENTER);
 
         label.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -220,6 +221,21 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
             elenco_battute.getChildren().remove(elenco_battute.getChildren().get(index));
             spartitoPentagramma.popBattuta();
         }
+    }
+    
+    public void setActiveBattuta(Integer i){
+      if(i > 0){
+        elenco_battute.getChildren().get(i-1).getStyleClass().remove("battuta-active");
+      }
+      elenco_battute.getChildren().get(i).getStyleClass().add("battuta-active");
+    }
+    
+    public void removeAllActiveBattuta(){
+      for (Object b : elenco_battute.getChildren()) {
+        if(elenco_battute.getChildren().indexOf(b) != elenco_battute.getChildren().size()-1){
+          ((Label) b).getStyleClass().remove("battuta-active");
+        }
+      }
     }
 
     public Integer getColumns() {

@@ -2,13 +2,14 @@
 
 <?import java.lang.*?>
 <?import java.net.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root type="javafx.scene.layout.HBox" fx:id="main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="120.0" prefWidth="1020.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<fx:root fx:id="main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="1020.0" type="javafx.scene.layout.HBox" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
   <stylesheets>
     <URL value="@../css/base.css" />
   </stylesheets>
+<padding>
+<Insets left="2.0" top="2.0" />
+</padding>
 </fx:root>

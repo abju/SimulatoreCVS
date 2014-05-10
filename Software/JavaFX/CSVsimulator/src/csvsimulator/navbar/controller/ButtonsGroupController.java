@@ -54,6 +54,7 @@ public class ButtonsGroupController extends BorderPane implements Initializable 
     public void playerGroup(final SpartitoBaseController obj) {
         nome_gruppo.setText("Player");
         final Player player = new Player();
+        player.setSpartito(obj);
         BottoneGenericoController btng = new BottoneGenericoController("Play", getClass().getResourceAsStream("/csvsimulator/navbar/images/player_play.png"));
         btng.setOnMouseClicked(new EventHandler<MouseEvent>() {
 

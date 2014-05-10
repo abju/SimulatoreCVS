@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javafx.application.Platform;
 
 /**
  *
@@ -76,13 +77,19 @@ public class PlayerUtils {
                     PlayerCodaCampana obj;
                     obj = (PlayerCodaCampana) it.next();
                     System.out.println("Battuta: " + obj.getNumeroBattuta() + " - " + obj.getCampana().getNome() +"  Pausa " + (long) obj.getPausa());
+                    
                     synchronized (this) {
                         Thread.currentThread().sleep((long) obj.getPausa());
                         while (suspendFlag) {
                             wait();
                         }
                     }
-
+                    
+                    Platform.runLater(new Runnable() {
+                        @Override public void run() {
+                            p.nowPlaying(obj.getNumeroBattuta());
+                        }
+                    });
                     obj.getCampana().play();
                 }
             } catch (InterruptedException ex) {

@@ -29,6 +29,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -73,6 +77,21 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
     private File file;
     private CampanileNuovoController parentController;
 
+    //Capire la campana
+    private static List<String> ZERO =    Arrays.asList("0", "zero");
+    private static List<String> UNO =     Arrays.asList("1", "uno", "prima");
+    private static List<String> DUE =     Arrays.asList("2", "due", "seconda");
+    private static List<String> TRE =     Arrays.asList("3", "tre", "terza");
+    private static List<String> QUATTRO = Arrays.asList("4", "quattro", "quarta");
+    private static List<String> CINQUE =  Arrays.asList("5", "cinque", "quinta");
+    private static List<String> SEI =     Arrays.asList("6", "sei", "sesta");
+    private static List<String> SETTE =   Arrays.asList("7", "sette", "settima");
+    private static List<String> OTTO =    Arrays.asList("8", "otto", "ottava");
+    private static List<String> NOVE =    Arrays.asList("9", "nove", "nona");
+    private static List<String> B =       Arrays.asList("b", "bi", "semitono");
+   
+    private static Map<String, List<String>> mappaNomiCampane;
+    
     public CampanileNuovoFieldsetController() {
         init();
     }
@@ -92,6 +111,39 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
         this.parentController = parentController;
         this.file = file;
         lblPathFile.setText(file.getAbsolutePath());
+        tfNomeCampana.setText(getNomeFromFileName(file.getName()));
+    }
+    
+    private String getNomeFromFileName(String filename){
+        String nome = "";
+        for (Map.Entry<String, List<String>> entry : mappaNomiCampane.entrySet()) {
+            String string = entry.getKey();
+            List<String> list = entry.getValue();
+            filename = stripExtension(filename.toLowerCase());
+            
+            if(list.contains(filename)){
+                return string;
+            }
+            String[] a = filename.split(" ", 3);
+            for (int i = 0; i < a.length; i++) {
+                if(list.contains(a[i])){
+                    return string;
+                }
+            }
+            a = filename.split("-", 3);
+            for (int i = 0; i < a.length; i++) {
+                if(list.contains(a[i])){
+                    return string;
+                }
+            }
+            a = filename.split("_", 3);
+            for (int i = 0; i < a.length; i++) {
+                if(list.contains(a[i])){
+                    return string;
+                }
+            }
+        }
+        return nome;
     }
 
     /**
@@ -124,6 +176,19 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
                 }
             }
         });
+        
+        mappaNomiCampane = new LinkedHashMap<>();
+        mappaNomiCampane.put("0", ZERO);
+        mappaNomiCampane.put("1", UNO);
+        mappaNomiCampane.put("2", DUE);
+        mappaNomiCampane.put("3", TRE);
+        mappaNomiCampane.put("4", QUATTRO);
+        mappaNomiCampane.put("5", CINQUE);
+        mappaNomiCampane.put("6", SEI);
+        mappaNomiCampane.put("7", SETTE);
+        mappaNomiCampane.put("8", OTTO);
+        mappaNomiCampane.put("9", NOVE);
+        mappaNomiCampane.put("B", B);
     }
 
     @FXML
@@ -172,6 +237,16 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
     @FXML
     private void eliminaAction(ActionEvent event) {
         parentController.rimuoviCampanaByObject(this);
+    }
+    
+    @FXML
+    private void suAction(ActionEvent event) {
+        parentController.alzaCampanaByObject(this);
+    }
+    
+    @FXML
+    private void giuAction(ActionEvent event) {
+       parentController.abbassaCampanaByObject(this);
     }
 
     /**
@@ -227,5 +302,24 @@ public class CampanileNuovoFieldsetController extends HBox implements Initializa
     public void setNumero(Integer numero) {
         lblNumeroCampana.setText((numero+1) + "");
         this.numero = numero;
+    }
+    
+    
+    static String stripExtension (String str) {
+        // Handle null case specially.
+
+        if (str == null) return null;
+
+        // Get position of last '.'.
+
+        int pos = str.lastIndexOf(".");
+
+        // If there wasn't any '.' just return the string as is.
+
+        if (pos == -1) return str;
+
+        // Otherwise return the string, up to the dot.
+
+        return str.substring(0, pos);
     }
 }

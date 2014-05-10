@@ -2,22 +2,24 @@
 
 <?import java.lang.*?>
 <?import java.net.*?>
-<?import java.util.*?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<fx:root type="javafx.scene.layout.BorderPane" id="mainButtonGroup" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="120.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<fx:root id="mainButtonGroup" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="58.0" prefWidth="-1.0" type="javafx.scene.layout.BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
   <bottom>
     <Label fx:id="nome_gruppo" alignment="CENTER_LEFT" contentDisplay="CENTER" disable="false" focusTraversable="false" graphicTextGap="0.0" labelFor="$nome_gruppo" mnemonicParsing="false" mouseTransparent="false" prefHeight="25.0" text="Nome del gruppo" textAlignment="CENTER" underline="false" visible="true" wrapText="true" BorderPane.alignment="CENTER">
       <BorderPane.margin>
         <Insets bottom="1.0" left="20.0" right="20.0" />
       </BorderPane.margin>
+<font>
+<Font name="Arial" size="12.0" />
+</font>
     </Label>
   </bottom>
   <center>
-    <HBox fx:id="buttons_space" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="110.0" prefWidth="-1.0" />
+    <HBox fx:id="buttons_space" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="34.0" prefWidth="-1.0" />
   </center>
   <padding>
     <Insets top="5.0" />

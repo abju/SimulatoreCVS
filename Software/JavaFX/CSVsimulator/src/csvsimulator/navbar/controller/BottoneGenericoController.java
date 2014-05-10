@@ -6,7 +6,6 @@
 
 package csvsimulator.navbar.controller;
 
-import csvsimulator.CSVsimulator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -25,16 +24,12 @@ import javafx.scene.layout.BorderPane;
  * @author lion
  */
 public class BottoneGenericoController extends BorderPane implements Initializable {
-
-    @FXML
-    private Label button_label;
     
     @FXML
     private ImageView button_icon;
     
     public BottoneGenericoController(String label, InputStream path_icon){
         init();
-        button_label.setText(label);
         button_icon.setImage(new Image(path_icon, button_icon.getFitWidth(), button_icon.getFitHeight(), true, true));        
     }
     
@@ -56,19 +51,5 @@ public class BottoneGenericoController extends BorderPane implements Initializab
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }    
-
-    /**
-     * @return the button_label
-     */
-    public Label getButton_label() {
-        return button_label;
-    }
-
-    /**
-     * @param button_label the button_label to set
-     */
-    public void setButton_label(Label button_label) {
-        this.button_label = button_label;
-    }
     
 }

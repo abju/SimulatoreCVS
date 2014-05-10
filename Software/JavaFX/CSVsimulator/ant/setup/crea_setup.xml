@@ -32,8 +32,8 @@
                  classname="net.sf.launch4j.ant.Launch4jTask"
                  classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
         <launch4j configFile="${launch4j.config}" 
-                 jar="${launch4j.jar}"
-                 outfile="${launch4j.dirOutput}/${exe_name}" />
+                  jar="${launch4j.jar}"
+                  outfile="${launch4j.dirOutput}/${exe_name}" />
 
     </target>
     
@@ -49,7 +49,13 @@
             <arg value="/dDirOutput=${innosetupcompiler.dirOutput}" />
             <arg value="/dOutputName=${setup_name}" />
         </exec>
-        <!--copy file="ProtexSetup.exe" todir="./bin"/-->
+        
+        <!--
+        <property name="site_dir" value="Z:/abju/httpd/campane.dev/data/download/setup/${versione}" />
+        <delete dir="${site_dir}" failonerror="false"/>
+        <mkdir dir="${site_dir}"/>
+        <copy file="${innosetupcompiler.dirOutput}/${setup_name}.exe" todir="${site_dir}"/>
+        -->
     </target>
 
 </project>

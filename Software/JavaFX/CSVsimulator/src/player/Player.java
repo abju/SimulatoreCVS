@@ -24,6 +24,7 @@
 package player;
 
 import csvsimulator.model.ModelConcerto;
+import csvsimulator.spartito.controller.SpartitoBaseController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ public class Player {
     private Boolean isPlaying;
     private Boolean isPause;
     private Integer posizioneAttuale;
+    private SpartitoBaseController spartito;
 
     private PlayerUtils.runThreadCampane playSuonata;
 
@@ -47,6 +49,7 @@ public class Player {
         isPause = false;
         posizioneAttuale = 0;
         playSuonata = null;
+        this.spartito = null;
     }
 
     public Player(ArrayList<PlayerCodaCampana> _coda) {
@@ -55,6 +58,7 @@ public class Player {
         isPause = false;
         posizioneAttuale = 0;
         playSuonata = null;
+        this.spartito = null;
     }
 
     public void createCodaCamapana(Map<String, Double> listaCampane, ModelConcerto concerto) {
@@ -69,10 +73,16 @@ public class Player {
 
         }
     }
+    
+    public void nowPlaying(Integer i){
+      //System.out.println("Ora sta suonando la battuta: " + i);
+      this.spartito.setActiveBattuta(i);
+    }
 
     public void play() {
         isPlaying = true;
         playSuonata = new PlayerUtils.runThreadCampane("CodaCampane", coda, this);
+        this.spartito.removeAllActiveBattuta();
         playSuonata.start();
     }
 
@@ -82,6 +92,7 @@ public class Player {
     }
 
     public void stop() {
+        this.spartito.removeAllActiveBattuta();
         playSuonata.stop();
     }
 
@@ -145,4 +156,18 @@ public class Player {
     public void setPosizioneAttuale(Integer posizioneAttuale) {
         this.posizioneAttuale = posizioneAttuale;
     }
+
+  /**
+   * @return the spartito
+   */
+  public SpartitoBaseController getSpartito() {
+    return spartito;
+  }
+
+  /**
+   * @param spartito the spartito to set
+   */
+  public void setSpartito(SpartitoBaseController spartito) {
+    this.spartito = spartito;
+  }
 }

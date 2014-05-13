@@ -9,10 +9,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 
 /**
  *
@@ -59,6 +63,7 @@ public class PlayerUtils {
 
         private final List<PlayerCodaCampana> coda;
         private final Player p;
+        private Timer timer;
 
         public runThreadCampane(String tName, List<PlayerCodaCampana> coda, Player p) {
             name = tName;
@@ -72,6 +77,8 @@ public class PlayerUtils {
         @Override
         public void run() {
             Iterator it = coda.iterator();
+            timer = new Timer(true);
+            Long t = (long)0;
             try {
                 while (it.hasNext()) {
                     PlayerCodaCampana obj;
@@ -79,14 +86,60 @@ public class PlayerUtils {
                     System.out.println("Battuta: " + obj.getNumeroBattuta() + " - " + obj.getCampana().getNome() +"  Pausa " + (long) obj.getPausa());
                     
                     synchronized (this) {
+                        /*new Thread(new Runnable() {
+                            @Override public void run() {
+                                for (int i=1; i<=(long) obj.getPausa(); i++) {
+                                    final int counter = i;
+                                    Platform.runLater(new Runnable() {
+                                        @Override public void run() {
+                                            //bar.setProgress(counter/1000000.0);
+                                            //System.out.println(counter+"");
+                                            //p.timePlayer(counter);
+                                        }
+                                    });
+                                }
+                            }
+                        }).start();
+                        */
+                      
+                      if((long) obj.getPausa()  > 0){
+                        final long t1 = t;
+                        t += (long) obj.getPausa();
+                        final long t2 = t;
+                        timer = new Timer(true);
+                        timer.scheduleAtFixedRate(new TimerTask() {
+
+                          private long time = 0;
+                          
+                          @Override
+                          public void run() {
+                            if(time == 0){
+                              time = t1;
+                            }
+                            Platform.runLater(new Runnable() {
+                                @Override public void run() {
+                                    p.timePlayer((int)time);
+                                }
+                            });
+  
+                            time += 20;
+                          }
+                        }, 0 , 20);
+                      }
+                      
                         Thread.currentThread().sleep((long) obj.getPausa());
                         while (suspendFlag) {
                             wait();
                         }
+                        
+                      if((long) obj.getPausa()  > 0){
+                        timer.cancel();
+                      }
                     }
                     
                     Platform.runLater(new Runnable() {
                         @Override public void run() {
+                            System.out.println("Numero battuta : " + obj.getNumeroBattuta());
                             p.nowPlaying(obj.getNumeroBattuta());
                         }
                     });
@@ -117,11 +170,13 @@ public class PlayerUtils {
                 resume();
             } else {
                 suspend();
+                timer.cancel();
             }
         }
 
         public void stop() {
             t.interrupt();
+            timer.cancel();
             notifyPlayer();
         }
 

@@ -55,6 +55,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     private BorderPane bpPentagramma;
     
     private SpartitoPentagrammaController spartitoPentagramma;
+    private SpartitoPentagrammaMascheraController spartitoPentagrammaMaschera;
 
     private ModelConcerto modelConcerto;
     private NavbarBaseController navbar;
@@ -85,7 +86,12 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         }
 
         this.spartitoPentagramma = new SpartitoPentagrammaController();
-        bpPentagramma.setCenter(this.spartitoPentagramma);
+        this.spartitoPentagrammaMaschera = new SpartitoPentagrammaMascheraController();
+        
+        this.spartitoPentagrammaMaschera.setSpartitoBaseController(this);
+        
+        
+        bpPentagramma.setCenter(this.spartitoPentagrammaMaschera);
         this.navbar = new NavbarBaseController();
         setTop(this.navbar);
         this.navbar.setUpNavSpartito(this);
@@ -190,6 +196,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         label.setPrefWidth(100);
         label.setMaxWidth(USE_PREF_SIZE);
         label.getStyleClass().add("battuta");
+        
         //label.getStyleClass().add("battuta-active");
         label.setAlignment(Pos.CENTER);
 
@@ -227,7 +234,10 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
       if(i > 0){
         elenco_battute.getChildren().get(i-1).getStyleClass().remove("battuta-active");
       }
-      elenco_battute.getChildren().get(i).getStyleClass().add("battuta-active");
+      if(!elenco_battute.getChildren().get(i).getStyleClass().toString().contains("battuta-active")){
+        elenco_battute.getChildren().get(i).getStyleClass().add("battuta-active");
+      }
+      //System.err.println(elenco_battute.getChildren().get(i).getStyleClass().toString());
     }
     
     public void removeAllActiveBattuta(){
@@ -242,6 +252,10 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         double cols;
         cols = (elenco_battute.getWidth() - elenco_battute.getPadding().getLeft() - elenco_battute.getPadding().getRight()) / elenco_battute.getTileWidth();
         return (int) cols;
+    }
+    
+    public void setTimePlayer(Integer i){
+      this.spartitoPentagrammaMaschera.setArrowPosition(i);
     }
 
     /**
@@ -258,8 +272,11 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         this.modelConcerto = modelConcerto;
         this.spartitoPentagramma.setSpartitoBaseController(this);
         this.spartitoPentagramma.getModelSuonata().setConcerto(this.modelConcerto);
+        this.spartitoPentagrammaMaschera.setSpartitoPentagramma(this.spartitoPentagramma);
     }
 
+    
+    
     /**
      * @return the navbar
      */

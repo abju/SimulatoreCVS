@@ -2,13 +2,61 @@
 
 <?import java.lang.*?>
 <?import java.net.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="csvsimulator.spartito.controller.SpartitoPentagrammaMascheraController">
+<fx:root id="mainSpartitoPentagrammaMaschera" type="javafx.scene.layout.StackPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+  <children>
+    <BorderPane>
+      <top>
+        <AnchorPane fx:id="timeBar" prefHeight="50" />
+      </top>
+      <left>
+        <AnchorPane fx:id="legendBar" prefWidth="50" /> 
+      </left>
+      <center>
+        <ScrollPane fx:id="scollSpartito">
+          <content>
+            
+            <StackPane >
+                <BorderPane fx:id="bpPentagramma" prefHeight="-1.0" prefWidth="100.0">
+                  <center>
+
+                  </center>
+                </BorderPane>
+                
+                <AnchorPane id="AnchorPane" fx:id="pane" focusTraversable="true" mouseTransparent="true" styleClass="mainFxmlClass">
+                  <stylesheets>
+                    <URL value="@/csvsimulator/spartito/css/spartitoplayerindicator.css" />
+                  </stylesheets>
+                  <children>
+                    <javafx.scene.Group fx:id="groupArrow" layoutX="0.0" layoutY="8.0">
+                      <Line endY="100.0" layoutX="0.0" layoutY="1.0" strokeLineCap="BUTT" strokeWidth="2.0" />
+                      <Polygon fill="DODGERBLUE" layoutX="0" layoutY="0" scaleX="8" scaleY="8" stroke="BLACK" strokeType="INSIDE">
+                        <points>
+                          <Double fx:value="0.0" />
+                          <Double fx:value="0.0" />        
+                          <Double fx:value="1.0" />        
+                          <Double fx:value="2.0" />
+                          <Double fx:value="-1.0" />        
+                          <Double fx:value="2.0" />
+                        </points>
+                      </Polygon>
+                    </javafx.scene.Group>
+                  </children>
+                </AnchorPane>
+            </StackPane>
+          </content>
+        </ScrollPane>
+      </center>
+    </BorderPane>
+    
+    
+    
+    
+  </children>
   <stylesheets>
-    <URL value="@/csvsimulator/spartito/css/spartitopentagrammamaschera.css"/>
+    <URL value="@../css/spartitopentagrammamaschera.css" />
   </stylesheets>
-</AnchorPane>
+</fx:root>

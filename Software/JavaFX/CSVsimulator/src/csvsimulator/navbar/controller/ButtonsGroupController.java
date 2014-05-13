@@ -61,6 +61,7 @@ public class ButtonsGroupController extends BorderPane implements Initializable 
             @Override
             public void handle(MouseEvent t) {
                 if (!player.getIsPlaying()) {
+                    obj.getSpartitoPentagramma().getModelSuonata().getTotalTime();
                     player.createCodaCamapana(obj.getSpartitoPentagramma().getModelSuonata().getSuonata(), obj.getSpartitoPentagramma().getModelSuonata().getConcerto());
                     player.play();
                 } else {

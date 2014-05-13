@@ -56,8 +56,20 @@ public class ModelSuonata implements Serializable {
             lastValue = double1;
         }
 
+        
         return offsetBattute;
 
+    }
+    
+    
+    public double getTotalTime(){
+      Map<String, Double> suonata = this.getSuonata();
+      double total = 0.0;
+      for (Double val : suonata.values()) {
+           total += val;
+      }
+      System.err.println("TOTALE DURATA: " + total);
+      return total;
     }
     
     public Map<String, Double> getTimeBattute(){

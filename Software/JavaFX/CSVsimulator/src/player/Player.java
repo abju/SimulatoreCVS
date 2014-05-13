@@ -78,6 +78,10 @@ public class Player {
       //System.out.println("Ora sta suonando la battuta: " + i);
       this.spartito.setActiveBattuta(i);
     }
+    
+    public void timePlayer(Integer i){
+      this.spartito.setTimePlayer(i);
+    }
 
     public void play() {
         isPlaying = true;

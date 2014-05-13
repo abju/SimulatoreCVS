@@ -28,203 +28,215 @@ import javafx.scene.shape.Line;
  */
 public class SpartitoPentagrammaController extends AnchorPane {
 
-    private int ncampane = 6;
-    private int battutePerRiga = 0;
-    private ModelSuonata modelSuonata;
+  private int ncampane = 6;
+  private int battutePerRiga = 0;
+  private ModelSuonata modelSuonata;
 
-    private List<Group> battute;
+  private List<Group> battute;
 
-    private Group rigaPentagramma;
-    private Group rigaPentagrammaLinee;
+  private Group rigaPentagramma;
+  private Group rigaPentagrammaLinee;
 
-    private SpartitoBaseController spartitoBaseController;
-    /*
-     COSTANTI PENTAGRAMMA
-     */
-    private static double dimensioneNote = 15;
-    private static double distanzaTraRighe = 40;
+  private SpartitoBaseController spartitoBaseController;
+  /*
+   COSTANTI PENTAGRAMMA
+   */
+  private static final double dimensioneNote = 20;
+  private static final double distanzaTraRighe = 25;
 
-    private double tempoSuonataUnit;
+  private double tempoSuonataUnit;
 
-    public SpartitoPentagrammaController() {
-        modelSuonata = new ModelSuonata();
-        battute = new ArrayList<>();
-        tempoSuonataUnit = 100.0;
-        rigaPentagramma = new Group();
-        rigaPentagrammaLinee = new Group();
+  public SpartitoPentagrammaController() {
+    modelSuonata = new ModelSuonata();
+    battute = new ArrayList<>();
+    tempoSuonataUnit = 60.0;
+    rigaPentagramma = new Group();
+    rigaPentagrammaLinee = new Group();
 
-        
+  }
+
+  private void initRigaPentagramma() {
+    ncampane = spartitoBaseController.getModelConcerto().getListaCampane().size();
+    int nlinee = ncampane / 2;
+    for (int i = 0; i < nlinee; i++) {
+      Line line = new Line(0, getDimensioneNote() * i + getDimensioneNote() + getDistanzaTraRighe(), 0, getDimensioneNote() * i + getDimensioneNote() + getDistanzaTraRighe());
+      line.setStrokeWidth(2);
+      line.setStroke(Color.BLACK);
+      rigaPentagrammaLinee.getChildren().add(line);
     }
+    rigaPentagramma.getChildren().add(rigaPentagrammaLinee);
+    getChildren().add(rigaPentagramma);
+    //setTopAnchor(rigaPentagramma, getDistanzaTraRighe());
+  }
 
-    private void initRigaPentagramma() {
-        ncampane = spartitoBaseController.getModelConcerto().getListaCampane().size();
-        System.err.println("numero campane " + ncampane);
-        int nlinee = ncampane / 2;
-        for (int i = 0; i < nlinee; i++) {
-            Line line = new Line(0, dimensioneNote * i + dimensioneNote, 0, dimensioneNote * i + dimensioneNote);
-            line.setStrokeWidth(2);
-            line.setStroke(Color.BLACK);
-            rigaPentagrammaLinee.getChildren().add(line);
-        }
-        rigaPentagramma.getChildren().add(rigaPentagrammaLinee);
-        getChildren().add(rigaPentagramma);
-        setTopAnchor(rigaPentagramma, distanzaTraRighe);
-    }
+  public Double getTimeByPosition(Double position) {
+    Double time = position - tempoSuonataUnit / 2;
+    time = time * getModelSuonata().getTempoSuonata() / tempoSuonataUnit;
+    return time;
+  }
 
-    public Double getTimeByPosition(Double position) {
-        Double time = position - tempoSuonataUnit / 2;
-        time = time * getModelSuonata().getTempoSuonata() / tempoSuonataUnit;
-        return time;
-    }
+  public void getContrattempoFromTime(Integer nBattuta, Integer nCampana, Double oldPos, Double newPos) {
+    ModelBattuta mb = getModelSuonata().getListaBattute().get(nBattuta);
+    Double contrattempo = mb.getTimeContrattempo(nCampana, getModelSuonata().getTempoSuonata());
+    Double tempoAttuale = getTimeByPosition(oldPos);
+    Double tempoCorretto = tempoAttuale - contrattempo;
 
-    public void getContrattempoFromTime(Integer nBattuta, Integer nCampana, Double oldPos, Double newPos) {
-        ModelBattuta mb = getModelSuonata().getListaBattute().get(nBattuta);
-        Double contrattempo = mb.getTimeContrattempo(nCampana, getModelSuonata().getTempoSuonata());
-        Double tempoAttuale = getTimeByPosition(oldPos);
-        Double tempoCorretto = tempoAttuale - contrattempo;
+    Double tempoFinale = getTimeByPosition(newPos);
+    Double contrattempoAttuale = tempoFinale - tempoCorretto;
 
-        Double tempoFinale = getTimeByPosition(newPos);
-        Double contrattempoAttuale = tempoFinale - tempoCorretto;
-
-        //      Double contrattempo = newValue.doubleValue()*1000;
+    //      Double contrattempo = newValue.doubleValue()*1000;
 //                contrattempo = contrattempo / spartitoPentagrammaController.getModelSuonata().getTempoSuonata();
-        mb.getListaCampane().put(nCampana, contrattempoAttuale / getModelSuonata().getTempoSuonata());
-        //System.out.println(tempoAttuale + " -- " + tempoCorretto + " -- " + tempoFinale + " -- " + oldPos + " -- " + newPos + "--" + (contrattempoAttuale / modelSuonata.getTempoSuonata()));
+    mb.getListaCampane().put(nCampana, contrattempoAttuale / getModelSuonata().getTempoSuonata());
+    //System.out.println(tempoAttuale + " -- " + tempoCorretto + " -- " + tempoFinale + " -- " + oldPos + " -- " + newPos + "--" + (contrattempoAttuale / modelSuonata.getTempoSuonata()));
+  }
+
+  public Map<String, Object> getPositionCampana(Double timeCampana, Integer numero_campana) {
+    Map<String, Object> r = new HashMap<>();
+    double x = tempoSuonataUnit * timeCampana / getModelSuonata().getTempoSuonata() + tempoSuonataUnit / 2;
+    double y = getDimensioneNote() + (getDimensioneNote() * (ncampane / 2 - 1)) + getDimensioneNote() - numero_campana * getDimensioneNote() / 2  + getDistanzaTraRighe();
+    if (ncampane % 2 == 0) {
+      y -= getDimensioneNote() / 2;
     }
 
-    public Map<String, Object> getPositionCampana(Double timeCampana, Integer numero_campana) {
-        Map<String, Object> r = new HashMap<>();
-        double x = tempoSuonataUnit * timeCampana / getModelSuonata().getTempoSuonata() + tempoSuonataUnit / 2;
-        double y = dimensioneNote + (dimensioneNote * (ncampane / 2 - 1)) + dimensioneNote - numero_campana * dimensioneNote / 2;
-        if(ncampane % 2 == 0){
-            y -= dimensioneNote/2;
-        }
+    r.put("y", y);
+    r.put("x", x);
 
-        r.put("y", y);
-        r.put("x", x);
+    return r;
+  }
 
-        return r;
+  /*
+   FUNZIONI PUBBLICHE
+   */
+  public void pushBattuta(final ModelBattuta mb, Label label) {
+    final Integer numero_battuta = getModelSuonata().pushBattuta(mb);
+
+    Group campaneBattuta = new Group();
+    Double lastX = 0.0;
+    for (final Integer numeroCampana : mb.getListaCampane().keySet()) {
+
+      Double timeCampana = getModelSuonata().getTimeCampana(numero_battuta, numeroCampana);
+      Map<String, Object> position = getPositionCampana(timeCampana, numeroCampana);
+
+      DraggableCircleSpartito c = new DraggableCircleSpartito(mb, numeroCampana, spartitoBaseController, this);
+      c.setCenterX((Double) position.get("x"));
+      c.setCenterY((Double) position.get("y"));
+      campaneBattuta.getChildren().add(c);
+
+      lastX = ((Double) position.get("x")) + 150.0;
     }
 
-    /*
-     FUNZIONI PUBBLICHE
-     */
-    public void pushBattuta(final ModelBattuta mb, Label label) {
-        final Integer numero_battuta = getModelSuonata().pushBattuta(mb);
+    rigaPentagramma.getChildren().add(campaneBattuta);
+    battute.add(campaneBattuta);
 
-        Group campaneBattuta = new Group();
-        Double lastX = 0.0;
-        for (final Integer numeroCampana : mb.getListaCampane().keySet()) {
+    refreshPosizioneCampane();
+    spartitoBaseController.getScrollPentagramma().layout();
+    spartitoBaseController.getScrollPentagramma().setHvalue(lastX);
+  }
 
-            Double timeCampana = getModelSuonata().getTimeCampana(numero_battuta, numeroCampana);
-            Map<String, Object> position = getPositionCampana(timeCampana, numeroCampana);
+  public void popBattuta() {
+    Integer index = modelSuonata.getListaBattute().size() - 1;
+    if (index >= 0) {
+      rigaPentagramma.getChildren().remove(battute.get(index));
+      battute.remove(battute.get(index));
+      modelSuonata.getListaBattute().remove(modelSuonata.getListaBattute().size() - 1);
+      refreshPosizioneCampane();
+    }
+  }
 
-            DraggableCircleSpartito c = new DraggableCircleSpartito(mb, numeroCampana, spartitoBaseController, this);
-            c.setCenterX((Double) position.get("x"));
-            c.setCenterY((Double) position.get("y"));
-            campaneBattuta.getChildren().add(c);
+  private void refreshLunghezzaLinee() {
+    Map<String, Double> timeBattute = getModelSuonata().getTimeBattute();
+    if (timeBattute.keySet().size() - 1 >= 0) {
+      String lastKey = (String) timeBattute.keySet().toArray()[timeBattute.keySet().size() - 1];
 
-            lastX = ((Double) position.get("x")) + 150.0;
-        }
+      Double lunghezza = timeBattute.get(lastKey) / getModelSuonata().getTempoSuonata() * tempoSuonataUnit + tempoSuonataUnit * 2;
+      for (Iterator<Node> it = rigaPentagrammaLinee.getChildren().iterator(); it.hasNext();) {
+        Line node = (Line) it.next();
+        node.setEndX(lunghezza);
+      }
+    }
+  }
 
-        rigaPentagramma.getChildren().add(campaneBattuta);        
-        battute.add(campaneBattuta);
+  public void refreshPosizioneCampane() {
+    Map<String, Double> timeBattute = getModelSuonata().getTimeBattute();
 
-        refreshPosizioneCampane();
-        spartitoBaseController.getScrollPentagramma().layout();        
-        spartitoBaseController.getScrollPentagramma().setHvalue(lastX);
+    for (ListIterator<ModelBattuta> it = getModelSuonata().getListaBattute().listIterator(); it.hasNext();) {
+      Integer numero_battuta = it.nextIndex();
+      ModelBattuta modelBattuta = it.next();
+      for (ListIterator<Integer> it1 = new ArrayList<>(modelBattuta.getListaCampane().keySet()).listIterator(); it1.hasNext();) {
+        Integer numero_campana = it1.nextIndex();
+        Integer id_campana = it1.next();
+
+        Double timeCampana = timeBattute.get(numero_battuta + "||" + id_campana);
+
+        Circle c = (Circle) battute.get(numero_battuta).getChildren().get(numero_campana);
+        Map<String, Object> position = getPositionCampana(timeCampana, id_campana);
+        c.setCenterX((Double) position.get("x"));
+      }
     }
 
-    public void popBattuta() {
-        Integer index = modelSuonata.getListaBattute().size() - 1;
-        if (index >= 0) {
-            rigaPentagramma.getChildren().remove(battute.get(index));
-            battute.remove(battute.get(index));
-            modelSuonata.getListaBattute().remove(modelSuonata.getListaBattute().size() - 1);
-            refreshPosizioneCampane();
-        }
-    }
+    refreshLunghezzaLinee();
+  }
 
-    private void refreshLunghezzaLinee() {
-        Map<String, Double> timeBattute = getModelSuonata().getTimeBattute();
-        if (timeBattute.keySet().size() - 1 >= 0) {
-            String lastKey = (String) timeBattute.keySet().toArray()[timeBattute.keySet().size() - 1];
+  public void setContrattempoCampana(Integer nBattuta, Integer nCampana, Double newValue) {
+    ModelBattuta mb = getModelSuonata().getListaBattute().get(nBattuta);
+    Integer campanaCode = (Integer) mb.getListaCampane().keySet().toArray()[nCampana];
+    mb.getListaCampane().put(campanaCode, newValue);
+  }
 
-            Double lunghezza = timeBattute.get(lastKey) / getModelSuonata().getTempoSuonata() * tempoSuonataUnit + tempoSuonataUnit * 2;
-            for (Iterator<Node> it = rigaPentagrammaLinee.getChildren().iterator(); it.hasNext();) {
-                Line node = (Line) it.next();
-                node.setEndX(lunghezza);
-            }
-        }
-    }
+  /**
+   * @return the modelSuonata
+   */
+  public ModelSuonata getModelSuonata() {
+    return modelSuonata;
+  }
 
-    public void refreshPosizioneCampane() {
-        Map<String, Double> timeBattute = getModelSuonata().getTimeBattute();
+  /**
+   * @param modelSuonata the modelSuonata to set
+   */
+  public void setModelSuonata(ModelSuonata modelSuonata) {
+    this.modelSuonata = modelSuonata;
+  }
 
-        for (ListIterator<ModelBattuta> it = getModelSuonata().getListaBattute().listIterator(); it.hasNext();) {
-            Integer numero_battuta = it.nextIndex();
-            ModelBattuta modelBattuta = it.next();
-            for (ListIterator<Integer> it1 = new ArrayList<>(modelBattuta.getListaCampane().keySet()).listIterator(); it1.hasNext();) {
-                Integer numero_campana = it1.nextIndex();
-                Integer id_campana = it1.next();
+  /**
+   * @return the battutePerRiga
+   */
+  public int getBattutePerRiga() {
+    return battutePerRiga;
+  }
 
-                Double timeCampana = timeBattute.get(numero_battuta + "||" + id_campana);
+  /**
+   * @param battutePerRiga the battutePerRiga to set
+   */
+  public void setBattutePerRiga(int battutePerRiga) {
+    this.battutePerRiga = battutePerRiga;
+  }
 
-                Circle c = (Circle) battute.get(numero_battuta).getChildren().get(numero_campana);
-                Map<String, Object> position = getPositionCampana(timeCampana, id_campana);
-                c.setCenterX((Double) position.get("x"));
-            }
-        }
+  /**
+   * @return the spartitoBaseController
+   */
+  public SpartitoBaseController getSpartitoBaseController() {
+    return spartitoBaseController;
+  }
 
-        refreshLunghezzaLinee();
-    }
+  /**
+   * @param spartitoBaseController the spartitoBaseController to set
+   */
+  public void setSpartitoBaseController(SpartitoBaseController spartitoBaseController) {
+    this.spartitoBaseController = spartitoBaseController;
+    initRigaPentagramma();
+  }
 
-    public void setContrattempoCampana(Integer nBattuta, Integer nCampana, Double newValue) {
-        ModelBattuta mb = getModelSuonata().getListaBattute().get(nBattuta);
-        Integer campanaCode = (Integer) mb.getListaCampane().keySet().toArray()[nCampana];
-        mb.getListaCampane().put(campanaCode, newValue);
-    }
+  /**
+   * @return the dimensioneNote
+   */
+  public double getDimensioneNote() {
+    return dimensioneNote;
+  }
 
-    /**
-     * @return the modelSuonata
-     */
-    public ModelSuonata getModelSuonata() {
-        return modelSuonata;
-    }
-
-    /**
-     * @param modelSuonata the modelSuonata to set
-     */
-    public void setModelSuonata(ModelSuonata modelSuonata) {
-        this.modelSuonata = modelSuonata;
-    }
-
-    /**
-     * @return the battutePerRiga
-     */
-    public int getBattutePerRiga() {
-        return battutePerRiga;
-    }
-
-    /**
-     * @param battutePerRiga the battutePerRiga to set
-     */
-    public void setBattutePerRiga(int battutePerRiga) {
-        this.battutePerRiga = battutePerRiga;
-    }
-
-    /**
-     * @return the spartitoBaseController
-     */
-    public SpartitoBaseController getSpartitoBaseController() {
-        return spartitoBaseController;
-    }
-
-    /**
-     * @param spartitoBaseController the spartitoBaseController to set
-     */
-    public void setSpartitoBaseController(SpartitoBaseController spartitoBaseController) {
-        this.spartitoBaseController = spartitoBaseController;
-        initRigaPentagramma();
-    }
+  /**
+   * @return the distanzaTraRighe
+   */
+  public double getDistanzaTraRighe() {
+    return distanzaTraRighe;
+  }
 }

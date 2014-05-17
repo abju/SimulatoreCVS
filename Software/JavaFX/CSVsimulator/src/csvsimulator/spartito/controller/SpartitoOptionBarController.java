@@ -54,16 +54,18 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
 
     private SpartitoBaseController spartitoBaseController;
     private SpartitoPentagrammaController spartitoPentagrammaController;
+    private SpartitoChartController spartitoChartController;
     private int nBattutaSelezionata;
 
     public SpartitoOptionBarController() {
         init();
     }
 
-    public SpartitoOptionBarController(SpartitoBaseController spartitoBaseController, SpartitoPentagrammaController spartitoPentagrammaController) {
+    public SpartitoOptionBarController(SpartitoBaseController spartitoBaseController, SpartitoPentagrammaController spartitoPentagrammaController, SpartitoChartController spartitoChartController) {
         init();
         this.spartitoBaseController = spartitoBaseController;
         this.spartitoPentagrammaController = spartitoPentagrammaController;
+        this.spartitoChartController = spartitoChartController;
 
         tempoSuonata.setMinValue(new BigDecimal(0.5));
         tempoSuonata.setNumber(new BigDecimal(spartitoPentagrammaController.getModelSuonata().getTempoSuonata() / 1000));
@@ -98,6 +100,7 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
                 contrattempo = contrattempo / spartitoPentagrammaController.getModelSuonata().getTempoSuonata();
                 spartitoPentagrammaController.setContrattempoCampana(nBattutaSelezionata, optBattutaSelectCampana.getSelectionModel().getSelectedIndex(), contrattempo);
                 spartitoPentagrammaController.refreshPosizioneCampane();
+                spartitoChartController.refreshPosizioneCampane();
             }
         });
 

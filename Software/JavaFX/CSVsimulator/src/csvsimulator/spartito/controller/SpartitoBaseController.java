@@ -7,6 +7,7 @@ package csvsimulator.spartito.controller;
 
 import csvsimulator.model.ModelBattuta;
 import csvsimulator.model.ModelConcerto;
+import csvsimulator.model.ModelSuonata;
 import csvsimulator.navbar.controller.NavbarBaseController;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,13 +18,20 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
@@ -56,10 +64,13 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     
     private SpartitoPentagrammaController spartitoPentagramma;
     private SpartitoPentagrammaMascheraController spartitoPentagrammaMaschera;
+    private SpartitoChartController spartitoChar;
 
     private ModelConcerto modelConcerto;
+    private ModelSuonata modelSuonata;
     private NavbarBaseController navbar;
     private BorderPane leftBar;
+    
 
     private SpartitoOptionBarController optionBar;
 
@@ -72,6 +83,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         init();
         this.modelConcerto = modelConcerto;
         this.spartitoPentagramma.setSpartitoBaseController(this);
+        
     }
 
     private void init() {
@@ -87,16 +99,50 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
 
         this.spartitoPentagramma = new SpartitoPentagrammaController();
         this.spartitoPentagrammaMaschera = new SpartitoPentagrammaMascheraController();
-        
         this.spartitoPentagrammaMaschera.setSpartitoBaseController(this);
         
         
         bpPentagramma.setCenter(this.spartitoPentagrammaMaschera);
+        
+        modelSuonata = new ModelSuonata();
+        
+        NumberAxis xAxis = new NumberAxis("X-Axis", 0, 1, 1);
+        NumberAxis yAxis = new NumberAxis("Y-Axis", 0.0, 0.0, 0.0);
+        xAxis.setForceZeroInRange(false);
+
+        
+        ObservableList<XYChart.Series> data = FXCollections.observableArrayList(
+            new ScatterChart.Series("Series 1", FXCollections.<ScatterChart.Data>observableArrayList(
+                new XYChart.Data(0.2, 3.5),
+                new XYChart.Data(0.7, 4.6),
+                new XYChart.Data(1.8, 1.7),
+                new XYChart.Data(2.1, 2.8),
+                new XYChart.Data(4.0, 2.2),
+                new XYChart.Data(4.1, 2.6),
+                new XYChart.Data(4.5, 2.0),
+                new XYChart.Data(6.0, 3.0),
+                new XYChart.Data(7.0, 2.0),
+                new XYChart.Data(7.8, 4.0),
+                new XYChart.Data(9, 4.0)
+            ))
+        );
+        spartitoChar = new SpartitoChartController(new NumberAxis("Tempo", 0, 0, 1000), new CategoryAxis());
+        spartitoChar.setLegendVisible(false);
+        spartitoChar.setAnimated(false);
+        spartitoChar.setSpartitoBC(this);
+        
+        xAxis.setLowerBound(xAxis.getLowerBound()+1);
+        xAxis.setUpperBound(xAxis.getUpperBound()+1);
+        
+        
+        bpPentagramma.setCenter(spartitoChar);
+        bpPentagramma.setBottom(spartitoChar.getScrollBarX());
+        
         this.navbar = new NavbarBaseController();
         setTop(this.navbar);
         this.navbar.setUpNavSpartito(this);
 
-        this.optionBar = new SpartitoOptionBarController(this, this.spartitoPentagramma);
+        this.optionBar = new SpartitoOptionBarController(this, this.spartitoPentagramma, this.spartitoChar);
         setLeft(this.optionBar);
 
         this.optionBar.getPaneBattutaNonSelezionata().setVisible(true);
@@ -220,6 +266,9 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         getSpartitoPentagramma().pushBattuta(mb, label);
 
         
+        final Integer numero_battuta = modelSuonata.pushBattuta(mb);
+        this.spartitoChar.pushBattuta(numero_battuta);
+        
     }
 
     public void popBattuta() {
@@ -273,6 +322,8 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         this.spartitoPentagramma.setSpartitoBaseController(this);
         this.spartitoPentagramma.getModelSuonata().setConcerto(this.modelConcerto);
         this.spartitoPentagrammaMaschera.setSpartitoPentagramma(this.spartitoPentagramma);
+        this.spartitoChar.setModelConcerto(modelConcerto);
+        this.spartitoChar.setModelSuonata(this.modelSuonata);
     }
 
     

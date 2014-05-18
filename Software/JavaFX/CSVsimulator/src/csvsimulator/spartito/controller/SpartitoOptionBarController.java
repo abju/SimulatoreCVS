@@ -18,6 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -51,6 +52,12 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
 
     @FXML
     private BigDecimalField tempoSuonata;
+    
+    @FXML
+    private CheckBox cbReboto;
+    
+    @FXML
+    private CheckBox cbOmessa;
 
     private SpartitoBaseController spartitoBaseController;
     private SpartitoChartController spartitoChartController;
@@ -99,8 +106,7 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
                 //spartitoPentagrammaController.setContrattempoCampana(nBattutaSelezionata, optBattutaSelectCampana.getSelectionModel().getSelectedIndex(), contrattempo);
                 
                 ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
-                Integer campanaCode = (Integer) mb.getListaCampane().keySet().toArray()[optBattutaSelectCampana.getSelectionModel().getSelectedIndex()];
-                mb.getListaCampane().put(campanaCode, contrattempo);
+                mb.getListaCampane().put(getNumeroCampana(), contrattempo);
                 
                 
                 spartitoChartController.refreshPosizioneCampane();
@@ -113,7 +119,7 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
             public void changed(ObservableValue ov, Object oldValue, Object newValue) {
                 if (optBattutaSelectCampana.getSelectionModel().getSelectedIndex() >= 0) {
                     ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
-                    Integer campanaCode = (Integer) mb.getListaCampane().keySet().toArray()[optBattutaSelectCampana.getSelectionModel().getSelectedIndex()];
+                    Integer campanaCode = getNumeroCampana();
 
                     spinnerContrattempo.setMaxValue(new BigDecimal(spartitoBaseController.getModelSuonata().getMaxContrattempoSec(nBattutaSelezionata, campanaCode)));
                     spinnerContrattempo.setMinValue(new BigDecimal(-spartitoBaseController.getModelSuonata().getMinContrattempoSec(nBattutaSelezionata, campanaCode)));
@@ -122,8 +128,19 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
                     } catch (IllegalArgumentException ex) {
 
                     }
+                    
+                    cbReboto.setSelected(mb.getReboto(getNumeroCampana()));
+                    cbOmessa.setSelected(mb.getOmessa(getNumeroCampana()));
                 }
             }
+        });
+        
+        cbReboto.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+          spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata).setReboto(getNumeroCampana(), t1);
+        });
+        
+        cbOmessa.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+          spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata).setOmessa(getNumeroCampana(), t1);
         });
 
     }
@@ -149,6 +166,10 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
         }
         optBattutaSelectCampana.setItems(names);
         optBattutaSelectCampana.setValue(names.get(0));
+        
+        
+        cbReboto.setSelected(mb.getReboto(getNumeroCampana()));
+        cbOmessa.setSelected(mb.getOmessa(getNumeroCampana()));
 
         try {
             spinnerContrattempo.setMaxValue(new BigDecimal(spartitoBaseController.getModelSuonata().getMaxContrattempoSec(numero_battuta, namesKey.get(0))));
@@ -157,6 +178,11 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
         } catch (IllegalArgumentException ex) {
 
         }
+    }
+    
+    private Integer getNumeroCampana(){
+      ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
+      return (Integer) mb.getListaCampane().keySet().toArray()[optBattutaSelectCampana.getSelectionModel().getSelectedIndex()];
     }
 
     public void setUpOptionBattuta(Integer numero_battuta, Integer numero_campana) {

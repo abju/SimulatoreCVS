@@ -27,7 +27,6 @@ import csvsimulator.model.ModelBattuta;
 import csvsimulator.model.ModelConcerto;
 import csvsimulator.spartito.controller.SpartitoBaseController;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,10 +87,12 @@ public class Player {
             } else if(mb.haveReboto(numeroCampana) && reboti.get(numeroCampana)) {
               parameters.put("reboto", "REB3");
               reboti.put(numeroCampana, true);
-            } else {
+            } else if(reboti.get(numeroCampana)){
               parameters.put("reboto", "REB2");
               reboti.put(numeroCampana, false);
             }
+            
+            parameters.put("omessa", mb.getOmessa(numeroCampana));
             
             coda.add(new PlayerCodaCampana(numeroBattuta, concerto.getCampanaByNumero(numeroCampana), double1, parameters));            
             

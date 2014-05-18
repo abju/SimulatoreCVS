@@ -144,10 +144,12 @@ public class PlayerUtils {
                     });
                     //obj.getCampana().play();
                     
-                    if(!obj.getReboto().equals("")){
-                      obj.getCampana().playReboto(obj.getReboto());
-                    } else {
-                      obj.getCampana().play();
+                    if(!obj.getOmessa()){
+                      if(!obj.getReboto().equals("")){
+                        obj.getCampana().playReboto(obj.getReboto());
+                      } else {
+                        obj.getCampana().play();
+                      }
                     }
                 }
             } catch (InterruptedException ex) {

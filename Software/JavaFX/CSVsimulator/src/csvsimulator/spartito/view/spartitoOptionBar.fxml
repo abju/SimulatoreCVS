@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
-<?import java.util.*?>
 <?import javafx.collections.*?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import jfxtras.labs.scene.control.* ?>
 
-<fx:root type="javafx.scene.layout.BorderPane" id="main" minHeight="-1.0" minWidth="300.0" prefHeight="760.0" prefWidth="300.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<fx:root id="main" minHeight="-1.0" minWidth="300.0" prefHeight="760.0" prefWidth="300.0" type="javafx.scene.layout.BorderPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
   <center>
     <ScrollPane fx:id="OtpionBarScroll" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0">
       <content>
@@ -21,7 +19,7 @@
                   <children>
                     <GridPane hgap="5.0" layoutX="0.0" layoutY="0.0" prefHeight="100.0" prefWidth="293.0" vgap="5.0">
                       <children>
-                        <BigDecimalField fx:id="tempoSuonata" prefWidth="200.0" GridPane.columnIndex="6" GridPane.columnSpan="4" GridPane.rowIndex="0" stepwidth="0.01" />
+                        <BigDecimalField fx:id="tempoSuonata" prefWidth="200.0" stepwidth="0.01" GridPane.columnIndex="6" GridPane.columnSpan="4" GridPane.rowIndex="0" />
                         <Label text="Tempo suonata (sec)" GridPane.columnIndex="0" GridPane.columnSpan="6" GridPane.rowIndex="0" />
                       </children>
                       <columnConstraints>
@@ -66,7 +64,7 @@
                           <items>
                             <FXCollections fx:factory="observableArrayList" />
                           </items>
-                        </ChoiceBox>
+                        </ChoiceBox><CheckBox fx:id="cbReboto" mnemonicParsing="false" prefHeight="21.0" prefWidth="141.0" text="Reboto" GridPane.columnSpan="5" GridPane.rowIndex="5" /><CheckBox fx:id="cbOmessa" mnemonicParsing="false" text="Omessa" GridPane.columnIndex="5" GridPane.columnSpan="5" GridPane.rowIndex="5" />
                       </children>
                       <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" percentWidth="10.0" />

@@ -21,11 +21,11 @@ public final class ModelBattuta implements Serializable {
     private static final long serialVersionUID = 1;
 
     private Map<Integer, Double> listaCampane;
-    private Map<Integer, Boolean> listaReboti;
-    private Map<Integer, Boolean> listaOmesse;
+    private final Map<Integer, Boolean> listaReboti;
+    private final Map<Integer, Boolean> listaOmesse;
 
-    private Boolean defaultReboto = true;
-    private Boolean defaultOmessa = false;
+    private final Boolean defaultReboto = false;
+    private final Boolean defaultOmessa = false;
     
     public ModelBattuta() {
         listaCampane = new TreeMap(Collections.reverseOrder());
@@ -37,6 +37,7 @@ public final class ModelBattuta implements Serializable {
         ModelCampana campana = concerto.getCampanaByNome(nome);
         if (campana != null) {
             listaReboti.put(campana.getNumero(), defaultReboto);
+            listaOmesse.put(campana.getNumero(), defaultOmessa);
             return listaCampane.putIfAbsent(campana.getNumero(), 0.0);
         }
         return 1.0;
@@ -45,7 +46,7 @@ public final class ModelBattuta implements Serializable {
 
     public String getNomeBattuta(ModelConcerto concerto) {
         String nomeBattuta = "";
-        List<Integer> list = new ArrayList<Integer>(listaCampane.keySet());
+        List<Integer> list = new ArrayList<>(listaCampane.keySet());
         Collections.reverse(list);
 
         for (Integer numeroCampana : list) {
@@ -69,6 +70,22 @@ public final class ModelBattuta implements Serializable {
         for (Integer numeroCampana : listaCampane.keySet()) {
             concerto.getCampanaByNumero(numeroCampana).play();
         }
+    }
+    
+    public void setReboto(Integer numeroCampana, Boolean value){
+      this.listaReboti.put(numeroCampana, value);
+    }
+    
+    public void setOmessa(Integer numeroCampana, Boolean value){
+      this.listaOmesse.put(numeroCampana, value);
+    }
+    
+    public Boolean getReboto(Integer numeroCampana){
+      return this.listaReboti.get(numeroCampana);
+    }
+    
+    public Boolean getOmessa(Integer numeroCampana){
+      return this.listaOmesse.get(numeroCampana);
     }
 
     /**

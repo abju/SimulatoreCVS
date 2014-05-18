@@ -24,12 +24,14 @@ public class PlayerCodaCampana {
         this.campana = campana;
         this.pausa = pausa;
         
+        
+        
         if(parameters.containsKey("reboto")){
           this.reboto = (String)parameters.get("reboto");
         }
         
         if(parameters.containsKey("omessa")){
-          this.reboto = (String)parameters.get("omessa");
+          this.omessa = (Boolean)parameters.get("omessa");
         }
     }
 

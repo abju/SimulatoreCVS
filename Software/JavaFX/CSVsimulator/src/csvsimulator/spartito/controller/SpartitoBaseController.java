@@ -99,33 +99,11 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         
         setModelSuonata(new ModelSuonata());
         
-        NumberAxis xAxis = new NumberAxis("X-Axis", 0, 1, 1);
-        NumberAxis yAxis = new NumberAxis("Y-Axis", 0.0, 0.0, 0.0);
-        xAxis.setForceZeroInRange(false);
 
-        
-        ObservableList<XYChart.Series> data = FXCollections.observableArrayList(
-            new ScatterChart.Series("Series 1", FXCollections.<ScatterChart.Data>observableArrayList(
-                new XYChart.Data(0.2, 3.5),
-                new XYChart.Data(0.7, 4.6),
-                new XYChart.Data(1.8, 1.7),
-                new XYChart.Data(2.1, 2.8),
-                new XYChart.Data(4.0, 2.2),
-                new XYChart.Data(4.1, 2.6),
-                new XYChart.Data(4.5, 2.0),
-                new XYChart.Data(6.0, 3.0),
-                new XYChart.Data(7.0, 2.0),
-                new XYChart.Data(7.8, 4.0),
-                new XYChart.Data(9, 4.0)
-            ))
-        );
         spartitoChar = new SpartitoChartController(new NumberAxis("Tempo", 0, 0, 1000), new CategoryAxis());
         spartitoChar.setLegendVisible(false);
         spartitoChar.setAnimated(false);
         spartitoChar.setSpartitoBC(this);
-        
-        xAxis.setLowerBound(xAxis.getLowerBound()+1);
-        xAxis.setUpperBound(xAxis.getUpperBound()+1);
         
         
         bpPentagramma.setCenter(spartitoChar);

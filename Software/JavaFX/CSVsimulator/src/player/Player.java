@@ -23,9 +23,12 @@
  */
 package player;
 
+import csvsimulator.model.ModelBattuta;
 import csvsimulator.model.ModelConcerto;
 import csvsimulator.spartito.controller.SpartitoBaseController;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,14 +66,35 @@ public class Player {
 
     public void createCodaCamapana(Map<String, Double> listaCampane, ModelConcerto concerto) {
         coda.clear();
+        
+        Map<Integer, Boolean> reboti = new HashMap<>();
+        
         for (Map.Entry<String, Double> entry : listaCampane.entrySet()) {
             String string = entry.getKey();
             Double double1 = entry.getValue();
 
             String[] battuta = string.split("\\|\\|");
+            Integer numeroBattuta = Integer.parseInt(battuta[0]);
+            Integer numeroCampana = Integer.parseInt(battuta[1]);
+            
+            reboti.putIfAbsent(numeroCampana, false);
+            
+            Map<String, Object> parameters = new HashMap<>();
+            ModelBattuta mb = spartito.getSpartitoPentagramma().getModelSuonata().getListaBattute().get(numeroBattuta);
 
-            coda.add(new PlayerCodaCampana(Integer.parseInt(battuta[0]), concerto.getCampanaByNumero(Integer.parseInt(battuta[1])), double1));
-
+            if(mb.haveReboto(numeroCampana) && !reboti.get(numeroCampana)){
+              parameters.put("reboto", "REB1");
+              reboti.put(numeroCampana, true);
+            } else if(mb.haveReboto(numeroCampana) && reboti.get(numeroCampana)) {
+              parameters.put("reboto", "REB3");
+              reboti.put(numeroCampana, true);
+            } else {
+              parameters.put("reboto", "REB2");
+              reboti.put(numeroCampana, false);
+            }
+            
+            coda.add(new PlayerCodaCampana(numeroBattuta, concerto.getCampanaByNumero(numeroCampana), double1, parameters));            
+            
         }
     }
     

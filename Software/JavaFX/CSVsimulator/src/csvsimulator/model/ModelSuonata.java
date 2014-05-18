@@ -48,11 +48,11 @@ public class ModelSuonata implements Serializable {
         
         double lastValue = 0;
         for (Map.Entry<String, Double> entry : battute.entrySet()) {
-            String string = entry.getKey();
+            String chiave = entry.getKey();
             Double double1 = entry.getValue();
-            System.out.println(string + " -- " + (double1 - lastValue));
+            System.out.println(chiave + " -- " + (double1 - lastValue));
 
-            offsetBattute.put(string, (double1 - lastValue));
+            offsetBattute.put(chiave, (double1 - lastValue));
             lastValue = double1;
         }
 

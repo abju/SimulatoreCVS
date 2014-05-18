@@ -22,116 +22,168 @@ import javafx.scene.media.AudioClip;
  */
 public class ModelCampana implements Serializable {
 
-    private static final long serialVersionUID = 1;
+  private static final long serialVersionUID = 1;
 
-    private String nome;
-    private int numero;
-    transient private AudioClip audioClip;
-    transient private String path;
+  private String nome;
+  private int numero;
+  transient private AudioClip audioClip;
+  transient private String path;
 
-    public ModelCampana() {
+  public ModelCampana() {
+  }
+
+  public ModelCampana(String nome, int numero) {
+    this.nome = nome;
+    this.numero = numero;
+  }
+
+  public ModelCampana(String nome, int numero, String path) {
+    this.nome = nome;
+    this.numero = numero;
+    this.path = path;
+
+    File f = new File(path);
+    URI u = f.toURI();
+    this.audioClip = new AudioClip(u.toString());
+  }
+
+  public void loadFromPath(String path) {
+    File f = new File(path);
+    URI u = f.toURI();
+    audioClip = new AudioClip(u.toString());
+
+    this.path = path;
+  }
+
+  private void writeObject(ObjectOutputStream oos) throws IOException {
+    oos.writeLong(serialVersionUID);
+    oos.writeObject(nome);
+    oos.writeInt(numero);
+
+    File file = new File(path);
+
+    FileInputStream fis = new FileInputStream(file);
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    byte[] buf = new byte[1024];
+
+    for (int readNum; (readNum = fis.read(buf)) != -1;) {
+      bos.write(buf, 0, readNum); //no doubt here is 0
+      //Writes len bytes from the specified byte array starting at offset off to this byte array output stream.
+      //System.out.println("read " + readNum + " bytes,");
     }
 
-    public ModelCampana(String nome, int numero) {
-        this.nome = nome;
-        this.numero = numero;
+    buf = bos.toByteArray();
+
+    oos.write(buf);
+
+    System.out.println("Lunghezza salvataggio: " + buf.length);
+  }
+
+  private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+    long versione = (Long) ois.readLong();
+    nome = (String) ois.readObject();
+    numero = ois.readInt();
+    byte[] buf = new byte[1024];
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    for (int readNum; (readNum = ois.read(buf)) != -1;) {
+      bos.write(buf, 0, readNum); //no doubt here is 0
     }
 
-    public ModelCampana(String nome, int numero, String path) {
-        this.nome = nome;
-        this.numero = numero;
-        this.path = path;
+    buf = bos.toByteArray();
 
-        File f = new File(path);
-        URI u = f.toURI();
-        this.audioClip = new AudioClip(u.toString());
-    }
+    System.err.println("Lunghezza lettura: " + buf.length);
 
-    public void loadFromPath(String path) {
-        File f = new File(path);
-        URI u = f.toURI();
-        audioClip = new AudioClip(u.toString());
+    File temp = File.createTempFile("tempfile", ".wav");
+    FileOutputStream fos = new FileOutputStream(temp.getAbsolutePath());
+    fos.write(buf);
+    fos.close();
 
-        this.path = path;
-    }
+    URI u = temp.toURI();
+    audioClip = new AudioClip(u.toString());
+  }
 
-    private void writeObject(ObjectOutputStream oos) throws IOException {
-        oos.writeLong(serialVersionUID);
-        oos.writeObject(nome);
-        oos.writeInt(numero);
+  public void play() {
+    audioClip.setVolume(1.0);
+    audioClip.play();
+  }
 
-        File file = new File(path);
+  public void playReboto(final String type) {
 
-        FileInputStream fis = new FileInputStream(file);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
+    synchronized (this) {
 
-        for (int readNum; (readNum = fis.read(buf)) != -1;) {
-            bos.write(buf, 0, readNum); //no doubt here is 0
-            //Writes len bytes from the specified byte array starting at offset off to this byte array output stream.
-            //System.out.println("read " + readNum + " bytes,");
+      new Thread(new Runnable() {
+        
+        Double volume1 = 1.0;
+        Double volume2 = 0.8;
+        Double volume3 = 0.5;
+        Number timeSleep = 400;
+        Number timeSleep2 = 500;
+        
+        Boolean type3 = false;
+   
+
+        @Override
+        public void run() {
+          if(type == "REB2"){
+            volume1 = 0.5;
+            volume2 = 1.0;
+            timeSleep = 250;
+          } else if (type == "REB3") {
+            volume1 = 0.5;
+            volume2 = 1.0;
+            timeSleep = 250;           
+            type3 = true;
+          }
+          audioClip.setVolume(volume1);
+          audioClip.play();
+          
+          try {
+            Thread.currentThread().sleep(timeSleep.longValue());
+            audioClip.setVolume(volume2);
+            audioClip.play();
+            
+            if(type3){
+              Thread.currentThread().sleep(timeSleep2.longValue());
+              audioClip.setVolume(volume3);
+              audioClip.play();
+            }
+          } catch (InterruptedException ex) {
+            //System.err.println(ex.toString());
+          } finally {
+          }
         }
 
-        buf = bos.toByteArray();
-
-        oos.write(buf);
-
-        System.out.println("Lunghezza salvataggio: " + buf.length);
+      }).start();
     }
 
-    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        long versione = (Long) ois.readLong();
-        nome = (String) ois.readObject();
-        numero = ois.readInt();
-        byte[] buf = new byte[1024];
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        for (int readNum; (readNum = ois.read(buf)) != -1;) {
-            bos.write(buf, 0, readNum); //no doubt here is 0
-        }
+  }
 
-        buf = bos.toByteArray();
-        
-        System.err.println("Lunghezza lettura: " + buf.length);
+  /**
+   * @return the nome
+   */
+  public String getNome() {
+    return nome;
+  }
 
-        File temp = File.createTempFile("tempfile", ".wav");
-        FileOutputStream fos = new FileOutputStream(temp.getAbsolutePath());
-        fos.write(buf);
-        fos.close();
-        
-        URI u = temp.toURI();
-        audioClip = new AudioClip(u.toString());
-    }
+  /**
+   * @param nome the nome to set
+   */
+  public void setNome(String nome) {
+    this.nome = nome;
+  }
 
-    public void play() {
-        audioClip.play();
-    }
+  /**
+   * @return the numero
+   */
+  public int getNumero() {
+    return numero;
+  }
 
-    /**
-     * @return the nome
-     */
-    public String getNome() {
-        return nome;
-    }
-
-    /**
-     * @param nome the nome to set
-     */
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    /**
-     * @return the numero
-     */
-    public int getNumero() {
-        return numero;
-    }
-
-    /**
-     * @param numero the numero to set
-     */
-    public void setNumero(int numero) {
-        this.numero = numero;
-    }
+  /**
+   * @param numero the numero to set
+   */
+  public void setNumero(int numero) {
+    this.numero = numero;
+  }
 
 }

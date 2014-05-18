@@ -84,10 +84,7 @@ public class SpartitoPentagrammaController extends AnchorPane {
     Double tempoFinale = getTimeByPosition(newPos);
     Double contrattempoAttuale = tempoFinale - tempoCorretto;
 
-    //      Double contrattempo = newValue.doubleValue()*1000;
-//                contrattempo = contrattempo / spartitoPentagrammaController.getModelSuonata().getTempoSuonata();
     mb.getListaCampane().put(nCampana, contrattempoAttuale / getModelSuonata().getTempoSuonata());
-    //System.out.println(tempoAttuale + " -- " + tempoCorretto + " -- " + tempoFinale + " -- " + oldPos + " -- " + newPos + "--" + (contrattempoAttuale / modelSuonata.getTempoSuonata()));
   }
 
   public Map<String, Object> getPositionCampana(Double timeCampana, Integer numero_campana) {

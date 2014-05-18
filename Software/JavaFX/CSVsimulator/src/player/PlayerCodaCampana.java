@@ -1,6 +1,8 @@
 package player;
 
 import csvsimulator.model.ModelCampana;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * 
@@ -11,14 +13,24 @@ public class PlayerCodaCampana {
     private int numeroBattuta;
     private ModelCampana campana;
     private double pausa;
+    private String reboto = "";
+    private Boolean omessa = false;
 
     public PlayerCodaCampana() {
     }
 
-    public PlayerCodaCampana(int numeroBattuta, ModelCampana campana, double pausa) {
+    public PlayerCodaCampana(int numeroBattuta, ModelCampana campana, double pausa, Map<String, Object> parameters) {
         this.numeroBattuta = numeroBattuta;
         this.campana = campana;
         this.pausa = pausa;
+        
+        if(parameters.containsKey("reboto")){
+          this.reboto = (String)parameters.get("reboto");
+        }
+        
+        if(parameters.containsKey("omessa")){
+          this.reboto = (String)parameters.get("omessa");
+        }
     }
 
     /**
@@ -62,6 +74,34 @@ public class PlayerCodaCampana {
     public void setPausa(double pausa) {
         this.pausa = pausa;
     }
+
+  /**
+   * @return the reboto
+   */
+  public String getReboto() {
+    return reboto;
+  }
+
+  /**
+   * @param reboto the reboto to set
+   */
+  public void setReboto(String reboto) {
+    this.reboto = reboto;
+  }
+
+  /**
+   * @return the omessa
+   */
+  public Boolean getOmessa() {
+    return omessa;
+  }
+
+  /**
+   * @param omessa the omessa to set
+   */
+  public void setOmessa(Boolean omessa) {
+    this.omessa = omessa;
+  }
     
     
 }

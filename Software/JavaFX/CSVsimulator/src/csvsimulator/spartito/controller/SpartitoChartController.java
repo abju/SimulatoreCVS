@@ -27,10 +27,8 @@ import csvsimulator.model.ModelBattuta;
 import csvsimulator.model.ModelCampana;
 import csvsimulator.model.ModelConcerto;
 import csvsimulator.model.ModelSuonata;
-import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -178,6 +176,14 @@ public class SpartitoChartController extends ScatterChart {
           spartitoBC.getOptionBar().setUpOptionBattuta(numero_battuta, numeroCampana);
         }
       });
+    }
+  }
+  
+  public void popBattuta() {
+    Integer index = modelSuonata.getListaBattute().size() - 1;
+    if (index >= 0) {
+      this.serie.getData().remove(this.serie.getData().size()-1);
+      refreshPosizioneCampane();
     }
   }
 

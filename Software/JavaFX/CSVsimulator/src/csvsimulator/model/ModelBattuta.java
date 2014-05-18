@@ -21,14 +21,22 @@ public final class ModelBattuta implements Serializable {
     private static final long serialVersionUID = 1;
 
     private Map<Integer, Double> listaCampane;
+    private Map<Integer, Boolean> listaReboti;
+    private Map<Integer, Boolean> listaOmesse;
 
+    private Boolean defaultReboto = true;
+    private Boolean defaultOmessa = false;
+    
     public ModelBattuta() {
         listaCampane = new TreeMap(Collections.reverseOrder());
+        listaReboti  = new TreeMap(Collections.reverseOrder());
+        listaOmesse  = new TreeMap(Collections.reverseOrder());
     }
 
     public Double pushCampanaByNome(String nome, ModelConcerto concerto) {
         ModelCampana campana = concerto.getCampanaByNome(nome);
         if (campana != null) {
+            listaReboti.put(campana.getNumero(), defaultReboto);
             return listaCampane.putIfAbsent(campana.getNumero(), 0.0);
         }
         return 1.0;
@@ -53,11 +61,14 @@ public final class ModelBattuta implements Serializable {
         return tempoSuonata * listaCampane.get(numero_campana);
     }
     
+    public Boolean haveReboto (Integer numeroCampana){
+      return this.listaReboti.get(numeroCampana);
+    }
+    
     public void play(ModelConcerto concerto){
         for (Integer numeroCampana : listaCampane.keySet()) {
             concerto.getCampanaByNumero(numeroCampana).play();
         }
-
     }
 
     /**

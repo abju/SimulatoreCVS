@@ -31,7 +31,6 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
@@ -104,7 +103,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         
         bpPentagramma.setCenter(this.spartitoPentagrammaMaschera);
         
-        modelSuonata = new ModelSuonata();
+        setModelSuonata(new ModelSuonata());
         
         NumberAxis xAxis = new NumberAxis("X-Axis", 0, 1, 1);
         NumberAxis yAxis = new NumberAxis("Y-Axis", 0.0, 0.0, 0.0);
@@ -211,20 +210,20 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
 
     @FXML
     private void nuovaBattutaKeyReleased(KeyEvent t) {
-        ModelBattuta md = new ModelBattuta();
+        ModelBattuta mb = new ModelBattuta();
         if (t.getCode() == KeyCode.SPACE || t.getCode() == KeyCode.ENTER) {
             String text = nuovaBattuta.getText().trim();
             boolean battutaValida = true;
             if (!text.equals("")) {
                 String[] battute = text.split("/");
                 for (int i = 0; i < battute.length; i++) {
-                    if (md.pushCampanaByNome(battute[i], modelConcerto) != null) {
+                    if (mb.pushCampanaByNome(battute[i], modelConcerto) != null) {
                         battutaValida = false;
                     }
                 }
 
                 if (battutaValida) {
-                    this.addBattuta(md);
+                    this.addBattuta(mb);
                     
                 }
 
@@ -266,7 +265,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         getSpartitoPentagramma().pushBattuta(mb, label);
 
         
-        final Integer numero_battuta = modelSuonata.pushBattuta(mb);
+        final Integer numero_battuta = this.modelSuonata.pushBattuta(mb);
         this.spartitoChar.pushBattuta(numero_battuta);
         
     }
@@ -276,6 +275,9 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         if (index >= 0) {
             elenco_battute.getChildren().remove(elenco_battute.getChildren().get(index));
             spartitoPentagramma.popBattuta();
+            spartitoChar.popBattuta();
+            
+            modelSuonata.getListaBattute().remove(modelSuonata.getListaBattute().size() - 1);
         }
     }
     
@@ -323,7 +325,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         this.spartitoPentagramma.getModelSuonata().setConcerto(this.modelConcerto);
         this.spartitoPentagrammaMaschera.setSpartitoPentagramma(this.spartitoPentagramma);
         this.spartitoChar.setModelConcerto(modelConcerto);
-        this.spartitoChar.setModelSuonata(this.modelSuonata);
+        this.spartitoChar.setModelSuonata(this.getModelSuonata());
     }
 
     
@@ -397,5 +399,19 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     public void setScrollPentagramma(ScrollPane scrollPentagramma) {
         this.scrollPentagramma = scrollPentagramma;
     }
+
+  /**
+   * @return the modelSuonata
+   */
+  public ModelSuonata getModelSuonata() {
+    return modelSuonata;
+  }
+
+  /**
+   * @param modelSuonata the modelSuonata to set
+   */
+  public void setModelSuonata(ModelSuonata modelSuonata) {
+    this.modelSuonata = modelSuonata;
+  }
 
 }

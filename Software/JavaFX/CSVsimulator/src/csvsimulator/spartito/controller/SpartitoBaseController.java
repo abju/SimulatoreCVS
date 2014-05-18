@@ -61,8 +61,6 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     @FXML
     private BorderPane bpPentagramma;
     
-    private SpartitoPentagrammaController spartitoPentagramma;
-    private SpartitoPentagrammaMascheraController spartitoPentagrammaMaschera;
     private SpartitoChartController spartitoChar;
 
     private ModelConcerto modelConcerto;
@@ -81,7 +79,6 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     public SpartitoBaseController(ModelConcerto modelConcerto) {
         init();
         this.modelConcerto = modelConcerto;
-        this.spartitoPentagramma.setSpartitoBaseController(this);
         
     }
 
@@ -96,12 +93,9 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
             throw new RuntimeException(exception);
         }
 
-        this.spartitoPentagramma = new SpartitoPentagrammaController();
-        this.spartitoPentagrammaMaschera = new SpartitoPentagrammaMascheraController();
-        this.spartitoPentagrammaMaschera.setSpartitoBaseController(this);
+
         
         
-        bpPentagramma.setCenter(this.spartitoPentagrammaMaschera);
         
         setModelSuonata(new ModelSuonata());
         
@@ -141,7 +135,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         setTop(this.navbar);
         this.navbar.setUpNavSpartito(this);
 
-        this.optionBar = new SpartitoOptionBarController(this, this.spartitoPentagramma, this.spartitoChar);
+        this.optionBar = new SpartitoOptionBarController(this, this.spartitoChar);
         setLeft(this.optionBar);
 
         this.optionBar.getPaneBattutaNonSelezionata().setVisible(true);
@@ -250,7 +244,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
             @Override
             public void handle(MouseEvent t) {
                 //Trovo l'indice della battuta con hasCode
-                int numero_battuta = spartitoPentagramma.getModelSuonata().getNumberBattutaFromModelBattuta(mb);
+                int numero_battuta = modelSuonata.getNumberBattutaFromModelBattuta(mb);
                 getOptionBar().setUpOptionBattuta(numero_battuta);
             }
         });
@@ -260,9 +254,6 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         //Ridisegna cosi posso avere le coordinate deve essere fatto proprio alla fine
         scrollSpartito.layout();        
         scrollSpartito.setVvalue(nuovaBattuta.getLayoutY());
-        
-        getSpartitoPentagramma().setBattutePerRiga(getColumns());
-        getSpartitoPentagramma().pushBattuta(mb, label);
 
         
         final Integer numero_battuta = this.modelSuonata.pushBattuta(mb);
@@ -271,13 +262,12 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     }
 
     public void popBattuta() {
-        Integer index = spartitoPentagramma.getModelSuonata().getListaBattute().size() - 1;
+        Integer index = this.modelSuonata.getListaBattute().size() - 1;
         if (index >= 0) {
             elenco_battute.getChildren().remove(elenco_battute.getChildren().get(index));
-            spartitoPentagramma.popBattuta();
             spartitoChar.popBattuta();
-            
             modelSuonata.getListaBattute().remove(modelSuonata.getListaBattute().size() - 1);
+            
         }
     }
     
@@ -306,7 +296,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     }
     
     public void setTimePlayer(Integer i){
-      this.spartitoPentagrammaMaschera.setArrowPosition(i);
+      //this.spartitoPentagrammaMaschera.setArrowPosition(i);
     }
 
     /**
@@ -321,9 +311,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
      */
     public void setModelConcerto(ModelConcerto modelConcerto) {
         this.modelConcerto = modelConcerto;
-        this.spartitoPentagramma.setSpartitoBaseController(this);
-        this.spartitoPentagramma.getModelSuonata().setConcerto(this.modelConcerto);
-        this.spartitoPentagrammaMaschera.setSpartitoPentagramma(this.spartitoPentagramma);
+        this.modelSuonata.setConcerto(this.modelConcerto);
         this.spartitoChar.setModelConcerto(modelConcerto);
         this.spartitoChar.setModelSuonata(this.getModelSuonata());
     }
@@ -344,19 +332,6 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         this.navbar = navbar;
     }
 
-    /**
-     * @return the spartitoPentagramma
-     */
-    public SpartitoPentagrammaController getSpartitoPentagramma() {
-        return spartitoPentagramma;
-    }
-
-    /**
-     * @param spartitoPentagramma the spartitoPentagramma to set
-     */
-    public void setSpartitoPentagramma(SpartitoPentagrammaController spartitoPentagramma) {
-        this.spartitoPentagramma = spartitoPentagramma;
-    }
 
     /**
      * @return the leftBar

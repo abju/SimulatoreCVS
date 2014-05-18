@@ -80,7 +80,7 @@ public class Player {
             reboti.putIfAbsent(numeroCampana, false);
             
             Map<String, Object> parameters = new HashMap<>();
-            ModelBattuta mb = spartito.getSpartitoPentagramma().getModelSuonata().getListaBattute().get(numeroBattuta);
+            ModelBattuta mb = spartito.getModelSuonata().getListaBattute().get(numeroBattuta);
 
             if(mb.haveReboto(numeroCampana) && !reboti.get(numeroCampana)){
               parameters.put("reboto", "REB1");

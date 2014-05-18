@@ -53,7 +53,6 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
     private BigDecimalField tempoSuonata;
 
     private SpartitoBaseController spartitoBaseController;
-    private SpartitoPentagrammaController spartitoPentagrammaController;
     private SpartitoChartController spartitoChartController;
     private int nBattutaSelezionata;
 
@@ -61,14 +60,13 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
         init();
     }
 
-    public SpartitoOptionBarController(SpartitoBaseController spartitoBaseController, SpartitoPentagrammaController spartitoPentagrammaController, SpartitoChartController spartitoChartController) {
+    public SpartitoOptionBarController(SpartitoBaseController spartitoBaseController, SpartitoChartController spartitoChartController) {
         init();
         this.spartitoBaseController = spartitoBaseController;
-        this.spartitoPentagrammaController = spartitoPentagrammaController;
         this.spartitoChartController = spartitoChartController;
 
         tempoSuonata.setMinValue(new BigDecimal(0.5));
-        tempoSuonata.setNumber(new BigDecimal(spartitoPentagrammaController.getModelSuonata().getTempoSuonata() / 1000));
+        tempoSuonata.setNumber(new BigDecimal(this.spartitoBaseController.getModelSuonata().getTempoSuonata() / 1000));
     }
 
     private void init() {
@@ -87,8 +85,8 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
 
             @Override
             public void changed(ObservableValue<? extends BigDecimal> ov, BigDecimal t, BigDecimal t1) {
-                spartitoPentagrammaController.getModelSuonata().setTempoSuonata(t1.doubleValue() * 1000);
-                spartitoPentagrammaController.getModelSuonata().setTempoRitorno(t1.doubleValue() * 1000);
+                spartitoBaseController.getModelSuonata().setTempoSuonata(t1.doubleValue() * 1000);
+                spartitoBaseController.getModelSuonata().setTempoRitorno(t1.doubleValue() * 1000);
             }
         });
 
@@ -97,9 +95,14 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
             @Override
             public void changed(ObservableValue<? extends BigDecimal> ov, BigDecimal oldValue, BigDecimal newValue) {
                 Double contrattempo = newValue.doubleValue() * 1000;
-                contrattempo = contrattempo / spartitoPentagrammaController.getModelSuonata().getTempoSuonata();
-                spartitoPentagrammaController.setContrattempoCampana(nBattutaSelezionata, optBattutaSelectCampana.getSelectionModel().getSelectedIndex(), contrattempo);
-                spartitoPentagrammaController.refreshPosizioneCampane();
+                contrattempo = contrattempo / spartitoBaseController.getModelSuonata().getTempoSuonata();
+                //spartitoPentagrammaController.setContrattempoCampana(nBattutaSelezionata, optBattutaSelectCampana.getSelectionModel().getSelectedIndex(), contrattempo);
+                
+                ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
+                Integer campanaCode = (Integer) mb.getListaCampane().keySet().toArray()[optBattutaSelectCampana.getSelectionModel().getSelectedIndex()];
+                mb.getListaCampane().put(campanaCode, contrattempo);
+                
+                
                 spartitoChartController.refreshPosizioneCampane();
             }
         });
@@ -109,13 +112,13 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
             @Override
             public void changed(ObservableValue ov, Object oldValue, Object newValue) {
                 if (optBattutaSelectCampana.getSelectionModel().getSelectedIndex() >= 0) {
-                    ModelBattuta mb = spartitoPentagrammaController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
+                    ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
                     Integer campanaCode = (Integer) mb.getListaCampane().keySet().toArray()[optBattutaSelectCampana.getSelectionModel().getSelectedIndex()];
 
-                    spinnerContrattempo.setMaxValue(new BigDecimal(spartitoPentagrammaController.getModelSuonata().getMaxContrattempoSec(nBattutaSelezionata, campanaCode)));
-                    spinnerContrattempo.setMinValue(new BigDecimal(-spartitoPentagrammaController.getModelSuonata().getMinContrattempoSec(nBattutaSelezionata, campanaCode)));
+                    spinnerContrattempo.setMaxValue(new BigDecimal(spartitoBaseController.getModelSuonata().getMaxContrattempoSec(nBattutaSelezionata, campanaCode)));
+                    spinnerContrattempo.setMinValue(new BigDecimal(-spartitoBaseController.getModelSuonata().getMinContrattempoSec(nBattutaSelezionata, campanaCode)));
                     try {
-                        spinnerContrattempo.setNumber(new BigDecimal(mb.getListaCampane().get(campanaCode) * spartitoPentagrammaController.getModelSuonata().getTempoSuonata() / 1000));
+                        spinnerContrattempo.setNumber(new BigDecimal(mb.getListaCampane().get(campanaCode) * spartitoBaseController.getModelSuonata().getTempoSuonata() / 1000));
                     } catch (IllegalArgumentException ex) {
 
                     }
@@ -130,7 +133,7 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
         getPaneBattutaSelezionata().setVisible(true);
 
         nBattutaSelezionata = numero_battuta;
-        ModelBattuta mb = spartitoPentagrammaController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
+        ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
 
         //setto il nome della battuta e il numero della battuta
         nomeBattuta.setText(mb.getNomeBattuta(spartitoBaseController.getModelConcerto()));
@@ -148,9 +151,9 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
         optBattutaSelectCampana.setValue(names.get(0));
 
         try {
-            spinnerContrattempo.setMaxValue(new BigDecimal(spartitoPentagrammaController.getModelSuonata().getMaxContrattempoSec(numero_battuta, namesKey.get(0))));
-            spinnerContrattempo.setMinValue(new BigDecimal(-spartitoPentagrammaController.getModelSuonata().getMinContrattempoSec(numero_battuta, namesKey.get(0))));
-            spinnerContrattempo.setNumber(new BigDecimal(mb.getListaCampane().get(namesKey.get(0)) * spartitoPentagrammaController.getModelSuonata().getTempoSuonata() / 1000));
+            spinnerContrattempo.setMaxValue(new BigDecimal(spartitoBaseController.getModelSuonata().getMaxContrattempoSec(numero_battuta, namesKey.get(0))));
+            spinnerContrattempo.setMinValue(new BigDecimal(-spartitoBaseController.getModelSuonata().getMinContrattempoSec(numero_battuta, namesKey.get(0))));
+            spinnerContrattempo.setNumber(new BigDecimal(mb.getListaCampane().get(namesKey.get(0)) * spartitoBaseController.getModelSuonata().getTempoSuonata() / 1000));
         } catch (IllegalArgumentException ex) {
 
         }
@@ -276,21 +279,6 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
      */
     public void setnBattuta(int nBattuta) {
         this.nBattutaSelezionata = nBattuta;
-    }
-
-    /**
-     * @return the spartitoPentagrammaController
-     */
-    public SpartitoPentagrammaController getSpartitoPentagrammaController() {
-        return spartitoPentagrammaController;
-    }
-
-    /**
-     * @param spartitoPentagrammaController the spartitoPentagrammaController to
-     * set
-     */
-    public void setSpartitoPentagrammaController(SpartitoPentagrammaController spartitoPentagrammaController) {
-        this.spartitoPentagrammaController = spartitoPentagrammaController;
     }
 
 }

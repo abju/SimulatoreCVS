@@ -43,7 +43,7 @@ public class ButtonsGroupController extends BorderPane implements Initializable 
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-        System.out.println(caso);
+
         switch (caso) {
             case "player":
                 playerGroup((SpartitoBaseController) obj);
@@ -61,8 +61,8 @@ public class ButtonsGroupController extends BorderPane implements Initializable 
             @Override
             public void handle(MouseEvent t) {
                 if (!player.getIsPlaying()) {
-                    obj.getSpartitoPentagramma().getModelSuonata().getTotalTime();
-                    player.createCodaCamapana(obj.getSpartitoPentagramma().getModelSuonata().getSuonata(), obj.getSpartitoPentagramma().getModelSuonata().getConcerto());
+                    obj.getModelSuonata().getTotalTime();
+                    player.createCodaCamapana(obj.getModelSuonata().getSuonata(), obj.getModelSuonata().getConcerto());
                     player.play();
                 } else {
                     if (player.getIsPause()) {

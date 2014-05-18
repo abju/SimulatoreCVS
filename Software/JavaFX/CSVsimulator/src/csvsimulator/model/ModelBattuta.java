@@ -27,6 +27,8 @@ public final class ModelBattuta implements Serializable {
     private final Boolean defaultReboto = false;
     private final Boolean defaultOmessa = false;
     
+    public final static Integer KEY_PAUSA = -1;
+    
     public ModelBattuta() {
         listaCampane = new TreeMap(Collections.reverseOrder());
         listaReboti  = new TreeMap(Collections.reverseOrder());
@@ -34,6 +36,11 @@ public final class ModelBattuta implements Serializable {
     }
 
     public Double pushCampanaByNome(String nome, ModelConcerto concerto) {
+        if(nome.equals("P")){
+          listaCampane.put(KEY_PAUSA, 0.0);
+          return null;
+        }
+        
         ModelCampana campana = concerto.getCampanaByNome(nome);
         if (campana != null) {
             listaReboti.put(campana.getNumero(), defaultReboto);
@@ -45,6 +52,12 @@ public final class ModelBattuta implements Serializable {
     }
 
     public String getNomeBattuta(ModelConcerto concerto) {
+        
+        if(concerto.getListaCampane().size() == listaCampane.size()){
+          return "T";
+        }
+      
+      
         String nomeBattuta = "";
         List<Integer> list = new ArrayList<>(listaCampane.keySet());
         Collections.reverse(list);
@@ -53,6 +66,7 @@ public final class ModelBattuta implements Serializable {
             if (nomeBattuta.length() > 0) {
                 nomeBattuta += "/";
             }
+            
             nomeBattuta += concerto.getCampanaByNumero(numeroCampana).getNome();
         }
         return nomeBattuta;
@@ -63,6 +77,7 @@ public final class ModelBattuta implements Serializable {
     }
     
     public Boolean haveReboto (Integer numeroCampana){
+      if(numeroCampana == KEY_PAUSA) return false;
       return this.listaReboti.get(numeroCampana);
     }
     
@@ -81,10 +96,12 @@ public final class ModelBattuta implements Serializable {
     }
     
     public Boolean getReboto(Integer numeroCampana){
+      if(numeroCampana == KEY_PAUSA) return false;
       return this.listaReboti.get(numeroCampana);
     }
     
     public Boolean getOmessa(Integer numeroCampana){
+      if(numeroCampana == KEY_PAUSA) return false;
       return this.listaOmesse.get(numeroCampana);
     }
 

@@ -26,17 +26,21 @@ public class ModelConcerto implements Serializable {
 
     private String nomeConcerto;
     private List<ModelCampana> listaCampane;
+    
+    private ModelCampana modelPausa;
     //se si vuole evitare di serializzare un attributo basta mettere transient
     //con readObject si può decidere come impostare le variaibili ingorate in scrittura
     //transient private List<ModelCampana> listaCampane;
 
     public ModelConcerto() {
         listaCampane = new ArrayList<>();
+        this.modelPausa = new ModelCampana("P", ModelBattuta.KEY_PAUSA);
     }
 
     public ModelConcerto(String nomeConcerto, List<ModelCampana> listaCampane) {
         this.nomeConcerto = nomeConcerto;
         this.listaCampane = listaCampane;
+        this.modelPausa = new ModelCampana("P", ModelBattuta.KEY_PAUSA);
     }
 
     public void pushCampana(ModelCampana campana) {
@@ -45,6 +49,15 @@ public class ModelConcerto implements Serializable {
     }
 
     public ModelCampana getCampanaByNumero(int numeroCampana) {
+        if(this.modelPausa == null){
+          this.modelPausa = new ModelCampana("P", ModelBattuta.KEY_PAUSA);
+        }
+        
+        if(numeroCampana == ModelBattuta.KEY_PAUSA){
+          return this.modelPausa;
+        }
+      
+      
         for (Iterator<ModelCampana> it = listaCampane.iterator(); it.hasNext();) {
             ModelCampana modelCampana = it.next();
             if (modelCampana.getNumero() == numeroCampana) {

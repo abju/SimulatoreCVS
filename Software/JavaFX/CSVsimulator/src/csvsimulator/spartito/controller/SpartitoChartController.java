@@ -145,12 +145,12 @@ public class SpartitoChartController extends ScatterChart {
 
         @Override
         public void handle(MouseEvent t) {
-
+          
           spartitoBC.getOptionBar().setUpOptionBattuta(numero_battuta, numeroCampana);
           double contrattempoAttuale = mb.getTimeContrattempo(numeroCampana, modelSuonata.getTempoSuonata());          
           nodeTempoCorretto = (double)point.getXValue() - contrattempoAttuale;  
           nodeTempoMin = nodeTempoCorretto - modelSuonata.getMinContrattempoSec(numero_battuta, numeroCampana) * 1000;
-          nodeTempoMax = nodeTempoCorretto + modelSuonata.getMinContrattempoSec(numero_battuta, numeroCampana) * 1000;
+          nodeTempoMax = nodeTempoCorretto + modelSuonata.getMaxContrattempoSec(numero_battuta, numeroCampana) * 1000;
         }
       });
       
@@ -172,7 +172,6 @@ public class SpartitoChartController extends ScatterChart {
 
           mb.getListaCampane().put(numeroCampana, (newPos - nodeTempoCorretto) / getModelSuonata().getTempoSuonata());
           
-          
           spartitoBC.getOptionBar().setUpOptionBattuta(numero_battuta, numeroCampana);
         }
       });
@@ -182,7 +181,13 @@ public class SpartitoChartController extends ScatterChart {
   public void popBattuta() {
     Integer index = modelSuonata.getListaBattute().size() - 1;
     if (index >= 0) {
-      this.serie.getData().remove(this.serie.getData().size()-1);
+      
+      ModelBattuta mb = modelSuonata.getListaBattute().get(index);
+      for (Iterator<Integer> it = mb.getListaCampane().keySet().iterator(); it.hasNext();) {
+        Integer integer = it.next();
+        this.serie.getData().remove(this.serie.getData().size()-1);
+      }      
+      
       refreshPosizioneCampane();
     }
   }

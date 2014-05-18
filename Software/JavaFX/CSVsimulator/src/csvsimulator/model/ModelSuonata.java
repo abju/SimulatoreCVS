@@ -50,7 +50,6 @@ public class ModelSuonata implements Serializable {
         for (Map.Entry<String, Double> entry : battute.entrySet()) {
             String chiave = entry.getKey();
             Double double1 = entry.getValue();
-            System.out.println(chiave + " -- " + (double1 - lastValue));
 
             offsetBattute.put(chiave, (double1 - lastValue));
             lastValue = double1;
@@ -68,7 +67,6 @@ public class ModelSuonata implements Serializable {
       for (Double val : suonata.values()) {
            total += val;
       }
-      System.err.println("TOTALE DURATA: " + total);
       return total;
     }
     
@@ -90,7 +88,7 @@ public class ModelSuonata implements Serializable {
             prevBattuta.retainAll(modelBattuta.getListaCampane().keySet());
 
             double mainVal = val;
-            Integer mainCampana = -1;
+            Integer mainCampana = -1000;
             boolean isRitorno = (prevBattuta.size() > 0);
             
             prevBattuta = new ArrayList<>();

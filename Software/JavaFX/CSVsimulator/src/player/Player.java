@@ -81,6 +81,8 @@ public class Player {
             Map<String, Object> parameters = new HashMap<>();
             ModelBattuta mb = spartito.getModelSuonata().getListaBattute().get(numeroBattuta);
 
+
+            
             if(mb.haveReboto(numeroCampana) && !reboti.get(numeroCampana)){
               parameters.put("reboto", "REB1");
               reboti.put(numeroCampana, true);

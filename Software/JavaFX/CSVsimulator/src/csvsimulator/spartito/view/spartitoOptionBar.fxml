@@ -64,7 +64,7 @@
                           <items>
                             <FXCollections fx:factory="observableArrayList" />
                           </items>
-                        </ChoiceBox><CheckBox fx:id="cbReboto" mnemonicParsing="false" prefHeight="21.0" prefWidth="141.0" text="Reboto" GridPane.columnSpan="5" GridPane.rowIndex="5" /><CheckBox fx:id="cbOmessa" mnemonicParsing="false" text="Omessa" GridPane.columnIndex="5" GridPane.columnSpan="5" GridPane.rowIndex="5" />
+                        </ChoiceBox><CheckBox fx:id="cbReboto" mnemonicParsing="false" prefHeight="21.0" prefWidth="141.0" text="Ribattuta" GridPane.columnSpan="5" GridPane.rowIndex="5" /><CheckBox fx:id="cbOmessa" mnemonicParsing="false" text="Omessa" GridPane.columnIndex="5" GridPane.columnSpan="5" GridPane.rowIndex="5" />
                       </children>
                       <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" percentWidth="10.0" />

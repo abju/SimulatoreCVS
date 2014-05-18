@@ -103,59 +103,60 @@ public class ModelCampana implements Serializable {
   }
 
   public void play() {
-    audioClip.setVolume(1.0);
-    audioClip.play();
+    if (!this.getNome().equals("P")) {
+      audioClip.setVolume(1.0);
+      audioClip.play();
+    }
   }
 
   public void playReboto(final String type) {
+    if (!this.getNome().equals("P")) {
+      synchronized (this) {
 
-    synchronized (this) {
+        new Thread(new Runnable() {
 
-      new Thread(new Runnable() {
-        
-        Double volume1 = 1.0;
-        Double volume2 = 0.8;
-        Double volume3 = 0.5;
-        Number timeSleep = 400;
-        Number timeSleep2 = 500;
-        
-        Boolean type3 = false;
-   
+          Double volume1 = 1.0;
+          Double volume2 = 0.8;
+          Double volume3 = 0.5;
+          Number timeSleep = 400;
+          Number timeSleep2 = 500;
 
-        @Override
-        public void run() {
-          if(type == "REB2"){
-            volume1 = 0.5;
-            volume2 = 1.0;
-            timeSleep = 250;
-          } else if (type == "REB3") {
-            volume1 = 0.5;
-            volume2 = 1.0;
-            timeSleep = 250;           
-            type3 = true;
-          }
-          audioClip.setVolume(volume1);
-          audioClip.play();
-          
-          try {
-            Thread.currentThread().sleep(timeSleep.longValue());
-            audioClip.setVolume(volume2);
-            audioClip.play();
-            
-            if(type3){
-              Thread.currentThread().sleep(timeSleep2.longValue());
-              audioClip.setVolume(volume3);
-              audioClip.play();
+          Boolean type3 = false;
+
+          @Override
+          public void run() {
+            if (type == "REB2") {
+              volume1 = 0.5;
+              volume2 = 1.0;
+              timeSleep = 250;
+            } else if (type == "REB3") {
+              volume1 = 0.5;
+              volume2 = 1.0;
+              timeSleep = 250;
+              type3 = true;
             }
-          } catch (InterruptedException ex) {
-            //System.err.println(ex.toString());
-          } finally {
+            audioClip.setVolume(volume1);
+            audioClip.play();
+
+            try {
+              Thread.currentThread().sleep(timeSleep.longValue());
+              audioClip.setVolume(volume2);
+              audioClip.play();
+
+              if (type3) {
+                Thread.currentThread().sleep(timeSleep2.longValue());
+                audioClip.setVolume(volume3);
+                audioClip.play();
+              }
+            } catch (InterruptedException ex) {
+              //System.err.println(ex.toString());
+            } finally {
+            }
           }
-        }
 
-      }).start();
+        }).start();
+      }
     }
-
   }
 
   /**

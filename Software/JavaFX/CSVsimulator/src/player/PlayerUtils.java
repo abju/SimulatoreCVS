@@ -81,7 +81,6 @@ public class PlayerUtils {
                 while (it.hasNext()) {
                     PlayerCodaCampana obj;
                     obj = (PlayerCodaCampana) it.next();
-                    System.out.println("Battuta: " + obj.getNumeroBattuta() + " - " + obj.getCampana().getNome() +"  Pausa " + (long) obj.getPausa());
                     
                     synchronized (this) {
                         /*new Thread(new Runnable() {
@@ -138,7 +137,6 @@ public class PlayerUtils {
                     
                     Platform.runLater(new Runnable() {
                         @Override public void run() {
-                            System.out.println("Numero battuta : " + obj.getNumeroBattuta());
                             p.nowPlaying(obj.getNumeroBattuta());
                         }
                     });

@@ -129,6 +129,7 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
 
                     }
                     
+                    //System.err.println("NUMERO CAMPANA"  + getNumeroCampana());
                     cbReboto.setSelected(mb.getReboto(getNumeroCampana()));
                     cbOmessa.setSelected(mb.getOmessa(getNumeroCampana()));
                 }

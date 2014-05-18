@@ -6,6 +6,7 @@
 package csvsimulator.spartito.controller;
 
 import csvsimulator.model.ModelBattuta;
+import csvsimulator.model.ModelCampana;
 import csvsimulator.model.ModelConcerto;
 import csvsimulator.model.ModelSuonata;
 import csvsimulator.navbar.controller.NavbarBaseController;
@@ -15,11 +16,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,8 +28,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.ScatterChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
@@ -186,7 +184,16 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         if (t.getCode() == KeyCode.SPACE || t.getCode() == KeyCode.ENTER) {
             String text = nuovaBattuta.getText().trim();
             boolean battutaValida = true;
-            if (!text.equals("")) {
+            if (text.toUpperCase().equals("T")) {
+              for (Iterator<ModelCampana> it = modelConcerto.getListaCampane().iterator(); it.hasNext();) {
+                ModelCampana modelCampana = it.next();
+                mb.pushCampanaByNome(modelCampana.getNome(), modelConcerto);
+              }              
+              this.addBattuta(mb);
+            } else if (text.toUpperCase().equals("P")) {
+              mb.pushCampanaByNome("P", modelConcerto);
+              this.addBattuta(mb);
+            } else if (!text.equals("")) {
                 String[] battute = text.split("/");
                 for (int i = 0; i < battute.length; i++) {
                     if (mb.pushCampanaByNome(battute[i], modelConcerto) != null) {

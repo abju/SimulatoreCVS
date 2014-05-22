@@ -137,6 +137,11 @@ public class SpartitoChartController extends ScatterChart {
       final Node node = point.getNode();
       node.setId(numero_battuta + "||" + numeroCampana);
       
+      if (numeroCampana == ModelBattuta.KEY_PAUSA){
+        node.getStyleClass().add("chart-symbol-pausa");
+      }
+      
+      
       this.updateScroll();
       
       

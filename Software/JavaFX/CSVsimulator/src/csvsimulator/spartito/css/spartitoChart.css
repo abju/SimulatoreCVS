@@ -4,6 +4,10 @@
     -fx-padding: 8px;
 }
 
+.chart-symbol-pausa {
+  -fx-padding: 1000px 4px;
+}
+
 .chart-alternative-row-fill, .chart-alternative-column-fill{
     -fx-fill: #f5f5f5;
 }

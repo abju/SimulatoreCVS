@@ -175,7 +175,7 @@ public class SpartitoChartController extends ScatterChart {
           
           point.setXValue(newPos);
 
-          mb.getListaCampane().put(numeroCampana, (newPos - nodeTempoCorretto) / getModelSuonata().getTempoSuonata());
+          mb.setContrattempo(numeroCampana, (newPos - nodeTempoCorretto) / getModelSuonata().getTempoSuonata());
           
           spartitoBC.getOptionBar().setUpOptionBattuta(numero_battuta, numeroCampana);
         }

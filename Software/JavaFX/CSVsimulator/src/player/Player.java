@@ -83,10 +83,10 @@ public class Player {
 
 
             
-            if(mb.haveReboto(numeroCampana) && !reboti.get(numeroCampana)){
+            if(mb.haveReboto(numeroCampana).getValue() && !reboti.get(numeroCampana)){
               parameters.put("reboto", "REB1");
               reboti.put(numeroCampana, true);
-            } else if(mb.haveReboto(numeroCampana) && reboti.get(numeroCampana)) {
+            } else if(mb.haveReboto(numeroCampana).getValue() && reboti.get(numeroCampana)) {
               parameters.put("reboto", "REB3");
               reboti.put(numeroCampana, true);
             } else if(reboti.get(numeroCampana)){
@@ -113,7 +113,7 @@ public class Player {
     public void play() {
         isPlaying = true;
         playSuonata = new PlayerUtils.runThreadCampane("CodaCampane", coda, this);
-        this.spartito.removeAllActiveBattuta();
+        //this.spartito.removeAllActiveBattuta();
         playSuonata.start();
     }
 

@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -32,280 +34,289 @@ import jfxtras.labs.scene.control.BigDecimalField;
  */
 public class SpartitoOptionBarController extends BorderPane implements Initializable {
 
-    @FXML
-    private BigDecimalField spinnerContrattempo;
+  @FXML
+  private BigDecimalField spinnerContrattempo;
 
-    @FXML
-    private AnchorPane paneBattutaNonSelezionata;
+  @FXML
+  private AnchorPane paneBattutaNonSelezionata;
 
-    @FXML
-    private GridPane paneBattutaSelezionata;
+  @FXML
+  private GridPane paneBattutaSelezionata;
 
-    @FXML
-    private Label nomeBattuta;
+  @FXML
+  private Label nomeBattuta;
 
-    @FXML
-    private Label numeroBattuta;
+  @FXML
+  private Label numeroBattuta;
 
-    @FXML
-    private ChoiceBox optBattutaSelectCampana;
+  @FXML
+  private ChoiceBox optBattutaSelectCampana;
 
-    @FXML
-    private BigDecimalField tempoSuonata;
-    
-    @FXML
-    private CheckBox cbReboto;
-    
-    @FXML
-    private CheckBox cbOmessa;
+  @FXML
+  private BigDecimalField tempoSuonata;
 
-    private SpartitoBaseController spartitoBaseController;
-    private SpartitoChartController spartitoChartController;
-    private int nBattutaSelezionata;
+  @FXML
+  private CheckBox cbReboto;
 
-    public SpartitoOptionBarController() {
-        init();
+  @FXML
+  private CheckBox cbOmessa;
+
+  private SpartitoBaseController spartitoBaseController;
+  private SpartitoChartController spartitoChartController;
+  private int nBattutaSelezionata = -1;
+
+  public SpartitoOptionBarController() {
+    init();
+  }
+
+  public SpartitoOptionBarController(SpartitoBaseController spartitoBaseController, SpartitoChartController spartitoChartController) {
+    init();
+    this.spartitoBaseController = spartitoBaseController;
+    this.spartitoChartController = spartitoChartController;
+
+    tempoSuonata.setMinValue(new BigDecimal(0.5));
+    tempoSuonata.setNumber(new BigDecimal(this.spartitoBaseController.getModelSuonata().getTempoSuonata() / 1000));
+  }
+
+  private void init() {
+    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/csvsimulator/spartito/view/spartitoOptionBar.fxml"));
+    fxmlLoader.setRoot(this);
+    fxmlLoader.setController(this);
+
+    try {
+      fxmlLoader.load();
+    } catch (IOException exception) {
+      throw new RuntimeException(exception);
     }
 
-    public SpartitoOptionBarController(SpartitoBaseController spartitoBaseController, SpartitoChartController spartitoChartController) {
-        init();
-        this.spartitoBaseController = spartitoBaseController;
-        this.spartitoChartController = spartitoChartController;
+    //SUONATA
+    tempoSuonata.numberProperty().addListener(new ChangeListener<BigDecimal>() {
 
-        tempoSuonata.setMinValue(new BigDecimal(0.5));
-        tempoSuonata.setNumber(new BigDecimal(this.spartitoBaseController.getModelSuonata().getTempoSuonata() / 1000));
-    }
+      @Override
+      public void changed(ObservableValue<? extends BigDecimal> ov, BigDecimal t, BigDecimal t1) {
+        spartitoBaseController.getModelSuonata().setTempoSuonata(t1.doubleValue() * 1000);
+        spartitoBaseController.getModelSuonata().setTempoRitorno(t1.doubleValue() * 1000);
+      }
+    });
 
-    private void init() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/csvsimulator/spartito/view/spartitoOptionBar.fxml"));
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
-
-        try {
-            fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        //SUONATA
-        tempoSuonata.numberProperty().addListener(new ChangeListener<BigDecimal>() {
-
-            @Override
-            public void changed(ObservableValue<? extends BigDecimal> ov, BigDecimal t, BigDecimal t1) {
-                spartitoBaseController.getModelSuonata().setTempoSuonata(t1.doubleValue() * 1000);
-                spartitoBaseController.getModelSuonata().setTempoRitorno(t1.doubleValue() * 1000);
-            }
-        });
-
-        //BATTUTA
-        spinnerContrattempo.numberProperty().addListener(new ChangeListener<BigDecimal>() {
-            @Override
-            public void changed(ObservableValue<? extends BigDecimal> ov, BigDecimal oldValue, BigDecimal newValue) {
-                Double contrattempo = newValue.doubleValue() * 1000;
-                contrattempo = contrattempo / spartitoBaseController.getModelSuonata().getTempoSuonata();
+    //BATTUTA
+    spinnerContrattempo.numberProperty().addListener(new ChangeListener<BigDecimal>() {
+      @Override
+      public void changed(ObservableValue<? extends BigDecimal> ov, BigDecimal oldValue, BigDecimal newValue) {
+        Double contrattempo = newValue.doubleValue() * 1000;
+        contrattempo = contrattempo / spartitoBaseController.getModelSuonata().getTempoSuonata();
                 //spartitoPentagrammaController.setContrattempoCampana(nBattutaSelezionata, optBattutaSelectCampana.getSelectionModel().getSelectedIndex(), contrattempo);
-                
-                ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
-                mb.getListaCampane().put(getNumeroCampana(), contrattempo);
-                
-                
-                spartitoChartController.refreshPosizioneCampane();
-            }
-        });
 
-        optBattutaSelectCampana.valueProperty().addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue ov, Object oldValue, Object newValue) {
-                if (optBattutaSelectCampana.getSelectionModel().getSelectedIndex() >= 0) {
-                    ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
-                    Integer campanaCode = getNumeroCampana();
-
-                    spinnerContrattempo.setMaxValue(new BigDecimal(spartitoBaseController.getModelSuonata().getMaxContrattempoSec(nBattutaSelezionata, campanaCode)));
-                    spinnerContrattempo.setMinValue(new BigDecimal(-spartitoBaseController.getModelSuonata().getMinContrattempoSec(nBattutaSelezionata, campanaCode)));
-                    try {
-                        spinnerContrattempo.setNumber(new BigDecimal(mb.getListaCampane().get(campanaCode) * spartitoBaseController.getModelSuonata().getTempoSuonata() / 1000));
-                    } catch (IllegalArgumentException ex) {
-
-                    }
-                    
-                    //System.err.println("NUMERO CAMPANA"  + getNumeroCampana());
-                    cbReboto.setSelected(mb.getReboto(getNumeroCampana()));
-                    cbOmessa.setSelected(mb.getOmessa(getNumeroCampana()));
-                }
-            }
-        });
+        ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
+        //mb.getListaCampane().put(getNumeroCampana(), contrattempo);
+        mb.setContrattempo(getNumeroCampana(), contrattempo);
         
-        cbReboto.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
-          spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata).setReboto(getNumeroCampana(), t1);
-        });
-        
-        cbOmessa.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
-          spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata).setOmessa(getNumeroCampana(), t1);
-        });
+        spartitoChartController.refreshPosizioneCampane();
+      }
+    });
 
+    optBattutaSelectCampana.valueProperty().addListener(new ChangeListener() {
+
+      @Override
+      public void changed(ObservableValue ov, Object oldValue, Object newValue) {
+        if (optBattutaSelectCampana.getSelectionModel().getSelectedIndex() >= 0) {
+          ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
+          Integer campanaCode = getNumeroCampana();
+
+          spinnerContrattempo.setMaxValue(new BigDecimal(spartitoBaseController.getModelSuonata().getMaxContrattempoSec(nBattutaSelezionata, campanaCode)));
+          spinnerContrattempo.setMinValue(new BigDecimal(-spartitoBaseController.getModelSuonata().getMinContrattempoSec(nBattutaSelezionata, campanaCode)));
+          try {
+            spinnerContrattempo.setNumber(new BigDecimal(mb.getListaCampane().get(campanaCode) * spartitoBaseController.getModelSuonata().getTempoSuonata() / 1000));
+          } catch (IllegalArgumentException ex) {
+
+          }
+
+          //System.err.println("NUMERO CAMPANA"  + getNumeroCampana());
+          cbReboto.setSelected(mb.getReboto(getNumeroCampana()));
+          cbOmessa.setSelected(mb.getOmessa(getNumeroCampana()));
+        }
+      }
+    });
+
+
+    cbOmessa.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+      spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata).setOmessa(getNumeroCampana(), t1);
+    });
+
+  }
+
+  public void setUpOptionBattuta(Integer numero_battuta) {
+    getPaneBattutaNonSelezionata().setVisible(false);
+    
+
+    //Tolgo i bind vecchi se ci sono
+    ModelBattuta mb;
+    if (nBattutaSelezionata != -1) {
+      mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
+      mb.getRebotoProperty(getNumeroCampana()).unbindBidirectional(cbReboto.selectedProperty());
+      mb.getOmessaProperty(getNumeroCampana()).unbindBidirectional(cbOmessa.selectedProperty());
     }
 
-    public void setUpOptionBattuta(Integer numero_battuta) {
-        getPaneBattutaNonSelezionata().setVisible(false);
-        getPaneBattutaSelezionata().setVisible(true);
+    nBattutaSelezionata = numero_battuta;
+    mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
 
-        nBattutaSelezionata = numero_battuta;
-        ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
+    //setto il nome della battuta e il numero della battuta
+    nomeBattuta.setText(mb.getNomeBattuta(spartitoBaseController.getModelConcerto()));
+    numeroBattuta.setText((nBattutaSelezionata + 1) + "");
 
-        //setto il nome della battuta e il numero della battuta
-        nomeBattuta.setText(mb.getNomeBattuta(spartitoBaseController.getModelConcerto()));
-        numeroBattuta.setText((nBattutaSelezionata + 1) + "");
+    //dalla battuta estraggo le singole campane per la select box e lo spinner
+    ObservableList names = FXCollections.observableArrayList();
+    ObservableList<Integer> namesKey = FXCollections.observableArrayList();
+    for (Map.Entry<Integer, Double> en : mb.getListaCampane().entrySet()) {
+      Integer keyCampana = en.getKey();
+      names.add(spartitoBaseController.getModelConcerto().getCampanaByNumero(keyCampana).getNome());
+      namesKey.add(keyCampana);
+    }
+    optBattutaSelectCampana.setItems(names);
+    optBattutaSelectCampana.setValue(names.get(0));
 
-        //dalla battuta estraggo le singole campane per la select box e lo spinner
-        ObservableList names = FXCollections.observableArrayList();
-        ObservableList<Integer> namesKey = FXCollections.observableArrayList();
-        for (Map.Entry<Integer, Double> en : mb.getListaCampane().entrySet()) {
-            Integer keyCampana = en.getKey();
-            names.add(spartitoBaseController.getModelConcerto().getCampanaByNumero(keyCampana).getNome());
-            namesKey.add(keyCampana);
-        }
-        optBattutaSelectCampana.setItems(names);
-        optBattutaSelectCampana.setValue(names.get(0));
-        
-        
-        cbReboto.setSelected(mb.getReboto(getNumeroCampana()));
-        cbOmessa.setSelected(mb.getOmessa(getNumeroCampana()));
+    cbReboto.setSelected(mb.getReboto(getNumeroCampana()));
+    mb.getRebotoProperty(getNumeroCampana()).bindBidirectional(cbReboto.selectedProperty());
 
-        try {
-            spinnerContrattempo.setMaxValue(new BigDecimal(spartitoBaseController.getModelSuonata().getMaxContrattempoSec(numero_battuta, namesKey.get(0))));
-            spinnerContrattempo.setMinValue(new BigDecimal(-spartitoBaseController.getModelSuonata().getMinContrattempoSec(numero_battuta, namesKey.get(0))));
-            spinnerContrattempo.setNumber(new BigDecimal(mb.getListaCampane().get(namesKey.get(0)) * spartitoBaseController.getModelSuonata().getTempoSuonata() / 1000));
-        } catch (IllegalArgumentException ex) {
+    cbOmessa.setSelected(mb.getOmessa(getNumeroCampana()));
+    mb.getOmessaProperty(getNumeroCampana()).bindBidirectional(cbOmessa.selectedProperty());
 
-        }
+    try {
+      spinnerContrattempo.setMaxValue(new BigDecimal(spartitoBaseController.getModelSuonata().getMaxContrattempoSec(numero_battuta, namesKey.get(0))));
+      spinnerContrattempo.setMinValue(new BigDecimal(-spartitoBaseController.getModelSuonata().getMinContrattempoSec(numero_battuta, namesKey.get(0))));
+      spinnerContrattempo.setNumber(new BigDecimal(mb.getContrattempo(namesKey.get(0)) * spartitoBaseController.getModelSuonata().getTempoSuonata() / 1000));
+    } catch (IllegalArgumentException ex) {
+
     }
     
-    private Integer getNumeroCampana(){
-      ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
-      return (Integer) mb.getListaCampane().keySet().toArray()[optBattutaSelectCampana.getSelectionModel().getSelectedIndex()];
-    }
+    getPaneBattutaSelezionata().setVisible(true);
+  }
 
-    public void setUpOptionBattuta(Integer numero_battuta, Integer numero_campana) {
-        this.setUpOptionBattuta(numero_battuta);
-        optBattutaSelectCampana.setValue(spartitoBaseController.getModelConcerto().getCampanaByNumero(numero_campana).getNome());
-    }
+  private Integer getNumeroCampana() {
+    ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
+    return (Integer) mb.getListaCampane().keySet().toArray()[optBattutaSelectCampana.getSelectionModel().getSelectedIndex()];
+  }
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        //spinnerContrattempo.setFormat(new DecimalFormat("#,##0.00 sec"));
-    }
+  public void setUpOptionBattuta(Integer numero_battuta, Integer numero_campana) {
+    this.setUpOptionBattuta(numero_battuta);
+    optBattutaSelectCampana.setValue(spartitoBaseController.getModelConcerto().getCampanaByNumero(numero_campana).getNome());
+  }
 
-    /**
-     * @return the spartitoBaseController
-     */
-    public SpartitoBaseController getSpartitoBaseController() {
-        return spartitoBaseController;
-    }
+  @Override
+  public void initialize(URL url, ResourceBundle rb) {
+    //spinnerContrattempo.setFormat(new DecimalFormat("#,##0.00 sec"));
+  }
 
-    /**
-     * @param spartitoBaseController the spartitoBaseController to set
-     */
-    public void setSpartitoBaseController(SpartitoBaseController spartitoBaseController) {
-        this.spartitoBaseController = spartitoBaseController;
-    }
+  /**
+   * @return the spartitoBaseController
+   */
+  public SpartitoBaseController getSpartitoBaseController() {
+    return spartitoBaseController;
+  }
 
-    /**
-     * @return the spinnerContrattempo
-     */
-    public BigDecimalField getSpinnerContrattempo() {
-        return spinnerContrattempo;
-    }
+  /**
+   * @param spartitoBaseController the spartitoBaseController to set
+   */
+  public void setSpartitoBaseController(SpartitoBaseController spartitoBaseController) {
+    this.spartitoBaseController = spartitoBaseController;
+  }
 
-    /**
-     * @param spinnerContrattempo the spinnerContrattempo to set
-     */
-    public void setSpinnerContrattempo(BigDecimalField spinnerContrattempo) {
-        this.spinnerContrattempo = spinnerContrattempo;
-    }
+  /**
+   * @return the spinnerContrattempo
+   */
+  public BigDecimalField getSpinnerContrattempo() {
+    return spinnerContrattempo;
+  }
 
-    /**
-     * @return the paneBattutaNonSelezionata
-     */
-    public AnchorPane getPaneBattutaNonSelezionata() {
-        return paneBattutaNonSelezionata;
-    }
+  /**
+   * @param spinnerContrattempo the spinnerContrattempo to set
+   */
+  public void setSpinnerContrattempo(BigDecimalField spinnerContrattempo) {
+    this.spinnerContrattempo = spinnerContrattempo;
+  }
 
-    /**
-     * @param paneBattutaNonSelezionata the paneBattutaNonSelezionata to set
-     */
-    public void setPaneBattutaNonSelezionata(AnchorPane paneBattutaNonSelezionata) {
-        this.paneBattutaNonSelezionata = paneBattutaNonSelezionata;
-    }
+  /**
+   * @return the paneBattutaNonSelezionata
+   */
+  public AnchorPane getPaneBattutaNonSelezionata() {
+    return paneBattutaNonSelezionata;
+  }
 
-    /**
-     * @return the paneBattutaSelezionata
-     */
-    public GridPane getPaneBattutaSelezionata() {
-        return paneBattutaSelezionata;
-    }
+  /**
+   * @param paneBattutaNonSelezionata the paneBattutaNonSelezionata to set
+   */
+  public void setPaneBattutaNonSelezionata(AnchorPane paneBattutaNonSelezionata) {
+    this.paneBattutaNonSelezionata = paneBattutaNonSelezionata;
+  }
 
-    /**
-     * @param paneBattutaSelezionata the paneBattutaSelezionata to set
-     */
-    public void setPaneBattutaSelezionata(GridPane paneBattutaSelezionata) {
-        this.paneBattutaSelezionata = paneBattutaSelezionata;
-    }
+  /**
+   * @return the paneBattutaSelezionata
+   */
+  public GridPane getPaneBattutaSelezionata() {
+    return paneBattutaSelezionata;
+  }
 
-    /**
-     * @return the nomeBattuta
-     */
-    public Label getNomeBattuta() {
-        return nomeBattuta;
-    }
+  /**
+   * @param paneBattutaSelezionata the paneBattutaSelezionata to set
+   */
+  public void setPaneBattutaSelezionata(GridPane paneBattutaSelezionata) {
+    this.paneBattutaSelezionata = paneBattutaSelezionata;
+  }
 
-    /**
-     * @param nomeBattuta the nomeBattuta to set
-     */
-    public void setNomeBattuta(Label nomeBattuta) {
-        this.nomeBattuta = nomeBattuta;
-    }
+  /**
+   * @return the nomeBattuta
+   */
+  public Label getNomeBattuta() {
+    return nomeBattuta;
+  }
 
-    /**
-     * @return the numeroBattuta
-     */
-    public Label getNumeroBattuta() {
-        return numeroBattuta;
-    }
+  /**
+   * @param nomeBattuta the nomeBattuta to set
+   */
+  public void setNomeBattuta(Label nomeBattuta) {
+    this.nomeBattuta = nomeBattuta;
+  }
 
-    /**
-     * @param numeroBattuta the numeroBattuta to set
-     */
-    public void setNumeroBattuta(Label numeroBattuta) {
-        this.numeroBattuta = numeroBattuta;
-    }
+  /**
+   * @return the numeroBattuta
+   */
+  public Label getNumeroBattuta() {
+    return numeroBattuta;
+  }
 
-    /**
-     * @return the optBattutaSelectCampana
-     */
-    public ChoiceBox getOptBattutaSelectCampana() {
-        return optBattutaSelectCampana;
-    }
+  /**
+   * @param numeroBattuta the numeroBattuta to set
+   */
+  public void setNumeroBattuta(Label numeroBattuta) {
+    this.numeroBattuta = numeroBattuta;
+  }
 
-    /**
-     * @param optBattutaSelectCampana the optBattutaSelectCampana to set
-     */
-    public void setOptBattutaSelectCampana(ChoiceBox optBattutaSelectCampana) {
-        this.optBattutaSelectCampana = optBattutaSelectCampana;
-    }
+  /**
+   * @return the optBattutaSelectCampana
+   */
+  public ChoiceBox getOptBattutaSelectCampana() {
+    return optBattutaSelectCampana;
+  }
 
-    /**
-     * @return the nBattuta
-     */
-    public int getnBattuta() {
-        return nBattutaSelezionata;
-    }
+  /**
+   * @param optBattutaSelectCampana the optBattutaSelectCampana to set
+   */
+  public void setOptBattutaSelectCampana(ChoiceBox optBattutaSelectCampana) {
+    this.optBattutaSelectCampana = optBattutaSelectCampana;
+  }
 
-    /**
-     * @param nBattuta the nBattuta to set
-     */
-    public void setnBattuta(int nBattuta) {
-        this.nBattutaSelezionata = nBattuta;
-    }
+  /**
+   * @return the nBattuta
+   */
+  public int getnBattuta() {
+    return nBattutaSelezionata;
+  }
+
+  /**
+   * @param nBattuta the nBattuta to set
+   */
+  public void setnBattuta(int nBattuta) {
+    this.nBattutaSelezionata = nBattuta;
+  }
 
 }

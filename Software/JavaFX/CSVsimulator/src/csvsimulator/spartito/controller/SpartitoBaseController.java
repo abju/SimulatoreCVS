@@ -36,6 +36,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.FileChooser;
+import org.controlsfx.control.PopOver;
 
 /**
  *
@@ -65,6 +66,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   private BorderPane leftBar;
 
   private SpartitoOptionBarController optionBar;
+  private PopOver popOver = new PopOver();
 
   public SpartitoBaseController() {
     init();
@@ -156,7 +158,6 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   @FXML
   private void nuovaBattutaKeyPress(KeyEvent t) {
     String text = nuovaBattuta.getText().trim();
-    System.out.println("Shift: " + t.isAltDown()+ " - " + t.getText() + " - " + t.isMetaDown()+ " - " + text + " - " + t.getCharacter());
     if(t.isMetaDown()){
       t.consume();
     }    
@@ -182,7 +183,6 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   private void nuovaBattutaKeyReleased(KeyEvent t) {
     
     String text = nuovaBattuta.getText().trim();
-    System.err.println("Shift: " + t.isAltDown()+ " - " + t.getText() + " - " + t.isShortcutDown());
     if (t.getCode() == KeyCode.SPACE || t.getCode() == KeyCode.ENTER) {
       checkBattuta(text);
       nuovaBattuta.setText("");
@@ -237,7 +237,14 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
       getOptionBar().setUpOptionBattuta(numero_battuta);
     });
 
-    elenco_battute.getChildren().add(elenco_battute.getChildren().size() - 1, label);
+    
+    
+    SpartitoLabelBattutaController slb = new SpartitoLabelBattutaController();
+    //System.out.println(slb.getLabel());
+    slb.getLabel().setText(mb.getNomeBattuta(modelConcerto));
+    slb.setContexMenu(mb);
+    
+    elenco_battute.getChildren().add(elenco_battute.getChildren().size() - 1, slb);
 
     //Ridisegna cosi posso avere le coordinate deve essere fatto proprio alla fine
     scrollSpartito.layout();

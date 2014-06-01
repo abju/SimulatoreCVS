@@ -1,25 +1,18 @@
-/*
- * The MIT License
+/* 
+ * Copyright (C) 2014 Marco Dalla Riva <marco.dallariva@outlook.com>
  *
- * Copyright 2014 Marco Dalla Riva <marco.dallariva@outlook.com>.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package csvsimulator.spartito.controller;
 
@@ -31,7 +24,6 @@ import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -110,18 +102,14 @@ public class SpartitoLabelBattutaController extends BorderPane implements Initia
       CheckMenuItem cmp = new CheckMenuItem(spc.getModelConcerto().getCampanaByNumero(integer).getNome());
       mb.getRebotoProperty(integer).bindBidirectional(cmp.selectedProperty());
       //Aggiungo o meno il bordo in caso di Reboto
-      mb.getRebotoProperty(integer).addListener(new ChangeListener<Boolean>() {
-
-        @Override
-        public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
-          if (t1) {
-            if (!topBorderPain.getStyleClass().toString().contains("haveReboto")) {
-              topBorderPain.getStyleClass().add("haveReboto");
-            }
-          } else {
-            if (mb.countReboti() == 0) {
-              topBorderPain.getStyleClass().remove("haveReboto");
-            }
+      mb.getRebotoProperty(integer).addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+        if (t1) {
+          if (!topBorderPain.getStyleClass().toString().contains("haveReboto")) {
+            topBorderPain.getStyleClass().add("haveReboto");
+          }
+        } else {
+          if (mb.countReboti() == 0) {
+            topBorderPain.getStyleClass().remove("haveReboto");
           }
         }
       });
@@ -129,18 +117,14 @@ public class SpartitoLabelBattutaController extends BorderPane implements Initia
 
       cmp = new CheckMenuItem(spc.getModelConcerto().getCampanaByNumero(integer).getNome());
       mb.getOmessaProperty(integer).bindBidirectional(cmp.selectedProperty());
-      mb.getOmessaProperty(integer).addListener(new ChangeListener<Boolean>() {
-
-        @Override
-        public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
-          if (t1) {
-            if (!bottomBorderPain.getStyleClass().toString().contains("haveOmessa")) {
-              bottomBorderPain.getStyleClass().add("haveOmessa");
-            }
-          } else {
-            if (mb.countOmesse() == 0) {
-              bottomBorderPain.getStyleClass().remove("haveOmessa");
-            }
+      mb.getOmessaProperty(integer).addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+        if (t1) {
+          if (!bottomBorderPain.getStyleClass().toString().contains("haveOmessa")) {
+            bottomBorderPain.getStyleClass().add("haveOmessa");
+          }
+        } else {
+          if (mb.countOmesse() == 0) {
+            bottomBorderPain.getStyleClass().remove("haveOmessa");
           }
         }
       });

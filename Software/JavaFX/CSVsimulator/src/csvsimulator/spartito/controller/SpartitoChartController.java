@@ -1,25 +1,18 @@
-/*
- * The MIT License
+/* 
+ * Copyright (C) 2014 Marco Dalla Riva <marco.dallariva@outlook.com>
  *
- * Copyright 2014 Marco Dalla Riva <marco.dallariva@outlook.com>.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package csvsimulator.spartito.controller;
 
@@ -29,6 +22,7 @@ import csvsimulator.model.ModelConcerto;
 import csvsimulator.model.ModelSuonata;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -104,8 +98,7 @@ public class SpartitoChartController extends ScatterChart {
 
   public void updateYAxis() {
     ObservableList<String> ol = FXCollections.<String>observableArrayList();
-    for (Iterator<ModelCampana> it = modelConcerto.getListaCampane().iterator(); it.hasNext();) {
-      ModelCampana modelCampana = it.next();
+    for (ModelCampana modelCampana : modelConcerto.getListaCampane()) {
       ol.add(modelCampana.getNome());
     }
     ((CategoryAxis) this.getYAxis()).setCategories(ol);
@@ -121,7 +114,7 @@ public class SpartitoChartController extends ScatterChart {
     }
   }
   
-  public void pushBattuta(Integer numero_battuta) {
+  public void addBattuta(Integer numero_battuta) {
 
     ModelBattuta mb = this.modelSuonata.getListaBattute().get(numero_battuta);
     final NumberAxis xAxis = (NumberAxis)this.getXAxis();
@@ -130,57 +123,52 @@ public class SpartitoChartController extends ScatterChart {
 
       Double timeCampana = getModelSuonata().getTimeCampana(numero_battuta, numeroCampana);
 
-      ScatterChart.Data<Long, String> point = new ScatterChart.Data<Long, String>(timeCampana.longValue(), this.modelConcerto.getCampanaByNumero(numeroCampana).getNome(), mb);
+      ScatterChart.Data<Long, String> point;
+      point = new ScatterChart.Data<>(timeCampana.longValue(), this.modelConcerto.getCampanaByNumero(numeroCampana).getNome(), mb);
       
       this.serie.getData().add(point);
       
       final Node node = point.getNode();
       node.setId(numero_battuta + "||" + numeroCampana);
       
-      if (numeroCampana == ModelBattuta.KEY_PAUSA){
+      if (Objects.equals(numeroCampana, ModelBattuta.KEY_PAUSA)){
         node.getStyleClass().add("chart-symbol-pausa");
-      }
+      }            
+      this.updateScroll();   
       
-      
-      this.updateScroll();
-      
-      
-      
-      node.setOnMousePressed(new EventHandler<MouseEvent>() {
-
-        @Override
-        public void handle(MouseEvent t) {
-          
-          spartitoBC.getOptionBar().setUpOptionBattuta(numero_battuta, numeroCampana);
-          double contrattempoAttuale = mb.getTimeContrattempo(numeroCampana, modelSuonata.getTempoSuonata());          
-          nodeTempoCorretto = (double)point.getXValue() - contrattempoAttuale;  
-          nodeTempoMin = nodeTempoCorretto - modelSuonata.getMinContrattempoSec(numero_battuta, numeroCampana) * 1000;
-          nodeTempoMax = nodeTempoCorretto + modelSuonata.getMaxContrattempoSec(numero_battuta, numeroCampana) * 1000;
-        }
+      node.setOnMousePressed((MouseEvent t) -> {
+        String[] nodeId = node.getId().split("\\|\\|");
+        Integer nb = Integer.valueOf(nodeId[0]);
+        Integer nc = Integer.valueOf(nodeId[1]);
+        spartitoBC.getOptionBar().setUpOptionBattuta(nb, nc);
+        double contrattempoAttuale = mb.getTimeContrattempo(nc, modelSuonata.getTempoSuonata());
+        nodeTempoCorretto = (double)point.getXValue() - contrattempoAttuale;
+        nodeTempoMin = nodeTempoCorretto - modelSuonata.getMinContrattempoSec(nb, nc) * 1000;
+        nodeTempoMax = nodeTempoCorretto + modelSuonata.getMaxContrattempoSec(nb, nc) * 1000;
       });
       
       
-      node.setOnMouseDragged(new EventHandler<MouseEvent>() {
-
-        @Override
-        public void handle(MouseEvent t) {
-          Number posX = xAxis.getValueForDisplay(t.getX());
-          long newPos = point.getXValue() + posX.longValue() - xAxis.getValueForDisplay(radiusCircle).longValue();      
-          
-          if (newPos < nodeTempoMin) {
-            newPos = nodeTempoMin.longValue();
-          } else if (newPos > nodeTempoMax) {
-            newPos = nodeTempoMax.longValue();
-          }
-          
-          point.setXValue(newPos);
-
-          mb.setContrattempo(numeroCampana, (newPos - nodeTempoCorretto) / getModelSuonata().getTempoSuonata());
-          
-          spartitoBC.getOptionBar().setUpOptionBattuta(numero_battuta, numeroCampana);
+      node.setOnMouseDragged((MouseEvent t) -> {
+        String[] nodeId = node.getId().split("\\|\\|");
+        Integer nb = Integer.valueOf(nodeId[0]);
+        Integer nc = Integer.valueOf(nodeId[1]);
+        Number posX = xAxis.getValueForDisplay(t.getX());
+        long newPos = point.getXValue() + posX.longValue() - xAxis.getValueForDisplay(radiusCircle).longValue();
+        
+        if (newPos < nodeTempoMin) {
+          newPos = nodeTempoMin.longValue();
+        } else if (newPos > nodeTempoMax) {
+          newPos = nodeTempoMax.longValue();
         }
+        
+        point.setXValue(newPos);
+        
+        mb.setContrattempo(nc, (newPos - nodeTempoCorretto) / getModelSuonata().getTempoSuonata());
+        
+        spartitoBC.getOptionBar().setUpOptionBattuta(nb, nc);
       });
-    }
+    }   
+    refreshPosizioneCampane();    
   }
   
   public void popBattuta() {
@@ -196,13 +184,28 @@ public class SpartitoChartController extends ScatterChart {
       refreshPosizioneCampane();
     }
   }
+  
 
+  
   public void refreshPosizioneCampane(){
     Map<String, Double> timeBattute = getModelSuonata().getTimeBattute();
 
     for (Iterator<Data<Long, String>> it = this.serie.getData().iterator(); it.hasNext();) {
       Data<Long, String> data = it.next();
       String id = data.getNode().getId();
+      ModelBattuta mb = (ModelBattuta)data.getExtraValue();
+      Integer nb_now = modelSuonata.getListaBattute().indexOf(mb);
+      
+      //Controllo se l'id è giusto
+      String[] nodeId = id.split("\\|\\|");
+      Integer nb = Integer.valueOf(nodeId[0]);
+      Integer nc = Integer.valueOf(nodeId[1]);
+      
+      if(!Objects.equals(nb, nb_now)){
+        id = nb_now + "||" + nc;
+        data.getNode().setId(id);
+      }
+      
       Double timeCampana = timeBattute.get(id);
       
       data.setXValue(timeCampana.longValue());

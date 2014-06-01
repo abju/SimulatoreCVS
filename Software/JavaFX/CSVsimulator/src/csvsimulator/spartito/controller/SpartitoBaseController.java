@@ -1,7 +1,18 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * Copyright (C) 2014 Marco Dalla Riva <marco.dallariva@outlook.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package csvsimulator.spartito.controller;
 
@@ -18,7 +29,6 @@ import java.io.ObjectInputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -30,7 +40,6 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.FileChooser;
@@ -144,7 +153,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
       if (t1.matches("^.*[^a-zA-Z0-9/].*$")) {
         nuovaBattuta.setText(t);
       }
-      
+
       if (t1.length() > 1) {
         if (t1.charAt(t1.length() - 2) == '/' && t1.charAt(t1.length() - 1) == '/') {
           nuovaBattuta.setText(t);
@@ -152,37 +161,44 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
       }
     });
     nuovaBattuta.setId("inputTextNuovaBattuta");
-      
-    
+
   }
 
+  /**
+   * 
+   * @param t 
+   */
   @FXML
   private void nuovaBattutaKeyPress(KeyEvent t) {
     String text = nuovaBattuta.getText().trim();
-    if(t.isMetaDown()){
+    if (t.isMetaDown()) {
       t.consume();
-    }    
-    
+    }
+
     if (t.getCode() == KeyCode.BACK_SPACE) {
       if (nuovaBattuta.getCharacters().length() <= 0) {
         popBattuta();
       }
     } else if (t.isMetaDown() && t.getText().length() > 0) {
-      
+
       ModelCampana mc = modelConcerto.getCampanaByNome(t.getText());
-      
+
       String text2 = t.getText() + "/";
-      if(mc.getNumero() < modelConcerto.getListaCampane().size() - 2){
-        text2 += modelConcerto.getCampanaByNumero(mc.getNumero()+2).getNome();
+      if (mc.getNumero() < modelConcerto.getListaCampane().size() - 2) {
+        text2 += modelConcerto.getCampanaByNumero(mc.getNumero() + 2).getNome();
         checkBattuta(text2);
-      }      
+      }
       nuovaBattuta.setText("");
     }
   }
 
+  /**
+   * 
+   * @param t 
+   */
   @FXML
   private void nuovaBattutaKeyReleased(KeyEvent t) {
-    
+
     String text = nuovaBattuta.getText().trim();
     if (t.getCode() == KeyCode.SPACE || t.getCode() == KeyCode.ENTER) {
       checkBattuta(text);
@@ -193,11 +209,19 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     }
   }
 
-  public void moveInputTextNuovaBattuta(Integer index){
+  /**
+   * 
+   * @param index 
+   */
+  public void moveInputTextNuovaBattuta(Integer index) {
     elenco_battute.getChildren().remove(nuovaBattuta);
     elenco_battute.getChildren().add(index, nuovaBattuta);
   }
-  
+
+  /**
+   * 
+   * @param text 
+   */
   private void checkBattuta(String text) {
     ModelBattuta mb = new ModelBattuta();
     boolean battutaValida = true;
@@ -225,45 +249,52 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     }
   }
 
-  /*METODI PRIVATI*/
+  /**
+   * 
+   * @param mb 
+   */
   private void addBattuta(final ModelBattuta mb) {
-
 
     //Ridisegna cosi posso avere le coordinate deve essere fatto proprio alla fine
     scrollSpartito.layout();
     scrollSpartito.setVvalue(nuovaBattuta.getLayoutY());
 
     final Integer numero_battuta = elenco_battute.getChildren().indexOf(nuovaBattuta);
-    this.modelSuonata.addBattuta(mb,numero_battuta);
+    this.modelSuonata.addBattuta(mb, numero_battuta);
     //final Integer numero_battuta = this.modelSuonata.pushBattuta(mb);
-    
-              this.spartitoChar.pushBattuta(numero_battuta);
-    
+
+    this.spartitoChar.addBattuta(numero_battuta);
+
     SpartitoLabelBattutaController slb = new SpartitoLabelBattutaController(this);
     slb.getLabel().setText(mb.getNomeBattuta(modelConcerto));
     slb.setContexMenu(mb);
-    
+
     elenco_battute.getChildren().add(numero_battuta, slb);
   }
-  
-  public void eliminaBattua(int index){
-    Integer indexText = elenco_battute.getChildren().indexOf(nuovaBattuta);    
+
+  /**
+   *
+   * @param index
+   */
+  public void eliminaBattua(int index) {
+    Integer indexText = elenco_battute.getChildren().indexOf(nuovaBattuta);
     modelSuonata.removeBattuta(index);
-    
+
     //Aggiorno lo spartito
     elenco_battute.getChildren().remove(nuovaBattuta);
     elenco_battute.getChildren().remove(index);
-    
-    System.out.println(index + " - " + indexText);
-    if(indexText <= index){
+
+    if (indexText <= index) {
       elenco_battute.getChildren().add(indexText, nuovaBattuta);
     } else {
       elenco_battute.getChildren().add(indexText - 1, nuovaBattuta);
     }
-    
-    
+
   }
 
+  /**
+   *
+   */
   public void popBattuta() {
     Integer index = this.modelSuonata.getListaBattute().size() - 1;
     if (index >= 0) {
@@ -274,6 +305,10 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     }
   }
 
+  /**
+   * 
+   * @param i 
+   */
   public void setActiveBattuta(Integer i) {
     if (i > 0) {
       elenco_battute.getChildren().get(i - 1).getStyleClass().remove("battuta-active");
@@ -284,18 +319,19 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     //System.err.println(elenco_battute.getChildren().get(i).getStyleClass().toString());
   }
 
+  /**
+   * 
+   */
   public void removeAllActiveBattuta() {
     elenco_battute.getChildren().stream().filter((b) -> (elenco_battute.getChildren().indexOf(b) != elenco_battute.getChildren().size() - 1)).forEach((Node b) -> {
       b.getStyleClass().remove("battuta-active");
     });
   }
 
-  public Integer getColumns() {
-    double cols;
-    cols = (elenco_battute.getWidth() - elenco_battute.getPadding().getLeft() - elenco_battute.getPadding().getRight()) / elenco_battute.getTileWidth();
-    return (int) cols;
-  }
-
+  /**
+   * 
+   * @param i 
+   */
   public void setTimePlayer(Integer i) {
     //this.spartitoPentagrammaMaschera.setArrowPosition(i);
   }

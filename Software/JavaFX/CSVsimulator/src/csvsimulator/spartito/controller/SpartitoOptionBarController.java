@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -105,12 +106,9 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
       public void changed(ObservableValue<? extends BigDecimal> ov, BigDecimal oldValue, BigDecimal newValue) {
         Double contrattempo = newValue.doubleValue() * 1000;
         contrattempo = contrattempo / spartitoBaseController.getModelSuonata().getTempoSuonata();
-                //spartitoPentagrammaController.setContrattempoCampana(nBattutaSelezionata, optBattutaSelectCampana.getSelectionModel().getSelectedIndex(), contrattempo);
-
         ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
-        //mb.getListaCampane().put(getNumeroCampana(), contrattempo);
         mb.setContrattempo(getNumeroCampana(), contrattempo);
-        
+
         spartitoChartController.refreshPosizioneCampane();
       }
     });
@@ -121,7 +119,15 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
       public void changed(ObservableValue ov, Object oldValue, Object newValue) {
         if (optBattutaSelectCampana.getSelectionModel().getSelectedIndex() >= 0) {
           ModelBattuta mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
-          Integer campanaCode = getNumeroCampana();
+          Integer campanaCode = getNumeroCampana();          
+          
+          if (oldValue != null) {
+            Integer oldCampanaCode = spartitoBaseController.getModelConcerto().getCampanaByNome(oldValue.toString()).getNumero();
+            mb.getRebotoProperty(oldCampanaCode).unbindBidirectional(cbReboto.selectedProperty());
+            mb.getOmessaProperty(oldCampanaCode).unbindBidirectional(cbOmessa.selectedProperty());
+          }
+          
+          
 
           spinnerContrattempo.setMaxValue(new BigDecimal(spartitoBaseController.getModelSuonata().getMaxContrattempoSec(nBattutaSelezionata, campanaCode)));
           spinnerContrattempo.setMinValue(new BigDecimal(-spartitoBaseController.getModelSuonata().getMinContrattempoSec(nBattutaSelezionata, campanaCode)));
@@ -131,13 +137,15 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
 
           }
 
-          //System.err.println("NUMERO CAMPANA"  + getNumeroCampana());
-          cbReboto.setSelected(mb.getReboto(getNumeroCampana()));
-          cbOmessa.setSelected(mb.getOmessa(getNumeroCampana()));
+          cbReboto.setSelected(mb.getReboto(campanaCode));
+          cbOmessa.setSelected(mb.getOmessa(campanaCode));
+          
+
+          mb.getRebotoProperty(getNumeroCampana()).bindBidirectional(cbReboto.selectedProperty());
+          mb.getOmessaProperty(getNumeroCampana()).bindBidirectional(cbOmessa.selectedProperty());
         }
       }
     });
-
 
     cbOmessa.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
       spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata).setOmessa(getNumeroCampana(), t1);
@@ -147,11 +155,10 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
 
   public void setUpOptionBattuta(Integer numero_battuta) {
     getPaneBattutaNonSelezionata().setVisible(false);
-    
 
     //Tolgo i bind vecchi se ci sono
     ModelBattuta mb;
-    if (nBattutaSelezionata != -1) {
+    if (nBattutaSelezionata != -1 && spartitoBaseController.getModelSuonata().getListaBattute().size() > nBattutaSelezionata ) {
       mb = spartitoBaseController.getModelSuonata().getListaBattute().get(nBattutaSelezionata);
       mb.getRebotoProperty(getNumeroCampana()).unbindBidirectional(cbReboto.selectedProperty());
       mb.getOmessaProperty(getNumeroCampana()).unbindBidirectional(cbOmessa.selectedProperty());
@@ -176,10 +183,7 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
     optBattutaSelectCampana.setValue(names.get(0));
 
     cbReboto.setSelected(mb.getReboto(getNumeroCampana()));
-    mb.getRebotoProperty(getNumeroCampana()).bindBidirectional(cbReboto.selectedProperty());
-
     cbOmessa.setSelected(mb.getOmessa(getNumeroCampana()));
-    mb.getOmessaProperty(getNumeroCampana()).bindBidirectional(cbOmessa.selectedProperty());
 
     try {
       spinnerContrattempo.setMaxValue(new BigDecimal(spartitoBaseController.getModelSuonata().getMaxContrattempoSec(numero_battuta, namesKey.get(0))));
@@ -188,7 +192,7 @@ public class SpartitoOptionBarController extends BorderPane implements Initializ
     } catch (IllegalArgumentException ex) {
 
     }
-    
+
     getPaneBattutaSelezionata().setVisible(true);
   }
 

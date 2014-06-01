@@ -22,236 +22,243 @@ import java.util.TreeMap;
  */
 public class ModelSuonata implements Serializable {
 
-    private static final long serialVersionUID = 1;
+  private static final long serialVersionUID = 1;
 
-    private ModelConcerto concerto;
-    private int numeroCampane;
-    private List<ModelBattuta> listaBattute;
-    private double tempoSuonata;
-    private double tempoRitorno;
+  private ModelConcerto concerto;
+  private int numeroCampane;
+  private List<ModelBattuta> listaBattute;
+  private double tempoSuonata;
+  private double tempoRitorno;
 
-    public ModelSuonata() {
-        listaBattute = new ArrayList<>();
-        tempoSuonata = 1200;
-        tempoRitorno = tempoSuonata;
+  public ModelSuonata() {
+    listaBattute = new ArrayList<>();
+    tempoSuonata = 1200;
+    tempoRitorno = tempoSuonata;
+  }
+
+  public void addBattuta(ModelBattuta b, Integer index) {
+    listaBattute.add(index, b);
+  }
+
+  public void removeBattuta(int index) {
+    listaBattute.remove(index);
+  }
+
+  public Integer pushBattuta(ModelBattuta b) {
+    listaBattute.add(b);
+    return listaBattute.indexOf(b);
+  }
+
+  public Map<String, Double> getSuonata() {
+    Map<String, Double> battute = getTimeBattute();
+    Map<String, Double> offsetBattute = new LinkedHashMap<>();
+
+    double lastValue = 0;
+    for (Map.Entry<String, Double> entry : battute.entrySet()) {
+      String chiave = entry.getKey();
+      Double double1 = entry.getValue();
+
+      offsetBattute.put(chiave, (double1 - lastValue));
+      lastValue = double1;
     }
 
-    public Integer pushBattuta(ModelBattuta b) {
-        listaBattute.add(b);
-        return listaBattute.indexOf(b);
+    return offsetBattute;
+
+  }
+
+  public double getTotalTime() {
+    Map<String, Double> suonata = this.getSuonata();
+    double total = 0.0;
+    for (Double val : suonata.values()) {
+      total += val;
     }
+    return total;
+  }
 
-    public Map<String, Double> getSuonata() {
-        Map<String, Double> battute = getTimeBattute();
-        Map<String, Double> offsetBattute = new LinkedHashMap<>();
-       
-        
-        double lastValue = 0;
-        for (Map.Entry<String, Double> entry : battute.entrySet()) {
-            String chiave = entry.getKey();
-            Double double1 = entry.getValue();
+  public Map<String, Double> getTimeBattute() {
+    return getTimeBattute(true);
+  }
 
-            offsetBattute.put(chiave, (double1 - lastValue));
-            lastValue = double1;
-        }
+  public Map<String, Double> getTimeBattute(Boolean contrattempi) {
+    Map<String, Double> battute = new TreeMap<>();
+    double lastValue = 0;
+    ArrayList<Integer> prevBattuta = new ArrayList<>();
 
-        
-        return offsetBattute;
+    for (ListIterator<ModelBattuta> it = listaBattute.listIterator(); it.hasNext();) {
+      int index = it.nextIndex();
+      ModelBattuta modelBattuta = it.next();
 
-    }
-    
-    
-    public double getTotalTime(){
-      Map<String, Double> suonata = this.getSuonata();
-      double total = 0.0;
-      for (Double val : suonata.values()) {
-           total += val;
-      }
-      return total;
-    }
-    
-    public Map<String, Double> getTimeBattute(){
-        return getTimeBattute(true);
-    }
-    
-    public Map<String, Double> getTimeBattute(Boolean contrattempi){
-        Map<String, Double> battute = new TreeMap<>();
-        double lastValue = 0;
-        ArrayList<Integer> prevBattuta = new ArrayList<>();
-        
-        for (ListIterator<ModelBattuta> it = listaBattute.listIterator(); it.hasNext();) {
-            int index = it.nextIndex();
-            ModelBattuta modelBattuta = it.next();
+      //Aumentare lastValue se è un ritorno di campana
+      double val = lastValue;
+      prevBattuta.retainAll(modelBattuta.getListaCampane().keySet());
 
-            //Aumentare lastValue se è un ritorno di campana
-            double val = lastValue;
-            prevBattuta.retainAll(modelBattuta.getListaCampane().keySet());
+      double mainVal = val;
+      Integer mainCampana = -1000;
+      boolean isRitorno = (prevBattuta.size() > 0);
 
-            double mainVal = val;
-            Integer mainCampana = -1000;
-            boolean isRitorno = (prevBattuta.size() > 0);
-            
-            prevBattuta = new ArrayList<>();
-            for (Integer numeroCampana : modelBattuta.getListaCampane().keySet()) {
-                
+      prevBattuta = new ArrayList<>();
+      for (Integer numeroCampana : modelBattuta.getListaCampane().keySet()) {
+
                 //val è il tempo dell'dell'ultima campana più la giusta pausa
-                //la moltiplicazione aggiunge il contrattempo
-                double intval = val;
-                        
-                if(contrattempi)
-                    intval += modelBattuta.getTimeContrattempo(numeroCampana, tempoSuonata);
-                
-                if(isRitorno)
-                    intval += getTempoRitorno();
-                
-                battute.put(index + "||" + numeroCampana, intval);
-                
-                if (numeroCampana > mainCampana) {
-                    mainCampana = numeroCampana;
-                    mainVal = intval;
-                }
-                
-                //Aggiorno la lista per controllare se è un ritorno
-                prevBattuta.add(numeroCampana);
-                
-            }
+        //la moltiplicazione aggiunge il contrattempo
+        double intval = val;
 
-            lastValue = mainVal + tempoSuonata;
+        if (contrattempi) {
+          intval += modelBattuta.getTimeContrattempo(numeroCampana, tempoSuonata);
         }
-        
-        battute = GlobalUtils.sortByValue(new TreeMap<>(battute));
-        
-        return battute;
-    }
-    
-    /**
-     * Restituisce quando una certa campana di una certa battuta viene eseguita
-     * @param nBattuta
-     * @param nCampana
-     * @return 
-     */
-    public Double getTimeCampana(Integer numero_battuta, Integer numero_campana){
-        Map<String, Double> battute = getTimeBattute();
-        return battute.get(numero_battuta + "||" + numero_campana);
-    }
-    
-    /**
-     * 
-     * @param numero_battuta
-     * @param numero_campana
-     * @return 
-     */
-    public Double getMinContrattempoSec(Integer numero_battuta, Integer numero_campana){
-        //Se è la prima battuta non può anticipare al messimo si fa ritardare la seconda battuta per far sembrare un anticipo
-        if(numero_battuta == 0){
-            return 0.0;
+
+        if (isRitorno) {
+          intval += getTempoRitorno();
         }
-        
+
+        battute.put(index + "||" + numeroCampana, intval);
+
+        if (numeroCampana > mainCampana) {
+          mainCampana = numeroCampana;
+          mainVal = intval;
+        }
+
+        //Aggiorno la lista per controllare se è un ritorno
+        prevBattuta.add(numeroCampana);
+
+      }
+
+      lastValue = mainVal + tempoSuonata;
+    }
+
+    battute = GlobalUtils.sortByValue(new TreeMap<>(battute));
+
+    return battute;
+  }
+
+  /**
+   * Restituisce quando una certa campana di una certa battuta viene eseguita
+   *
+   * @param nBattuta
+   * @param nCampana
+   * @return
+   */
+  public Double getTimeCampana(Integer numero_battuta, Integer numero_campana) {
+    Map<String, Double> battute = getTimeBattute();
+    return battute.get(numero_battuta + "||" + numero_campana);
+  }
+
+  /**
+   *
+   * @param numero_battuta
+   * @param numero_campana
+   * @return
+   */
+  public Double getMinContrattempoSec(Integer numero_battuta, Integer numero_campana) {
+    //Se è la prima battuta non può anticipare al messimo si fa ritardare la seconda battuta per far sembrare un anticipo
+    if (numero_battuta == 0) {
+      return 0.0;
+    }
+
         //poi se deve fare un ritorno non può anticipare troppo senza fare ribattute o cali, ma può strozzare quindi gli si può annullare parte del tempo
-        //per ora tolgo al massimo il tempo suonata
-        Set<Integer> campanePrecendi = new LinkedHashSet<>(listaBattute.get(numero_battuta-1).getListaCampane().keySet());
-        boolean mioRitorno = campanePrecendi.contains(numero_campana);
-        if(mioRitorno){
-            return tempoSuonata/1000;
-        }
-        
-        //Nel caso di un doppio con ritorno e la campana selezionata non è quella implicata nel ritorno può anticipare di più
-        Set<Integer> campaneBattua = new LinkedHashSet<>(listaBattute.get(numero_battuta).getListaCampane().keySet());
-        campaneBattua.retainAll(campanePrecendi);
-        boolean isRitorno = (campaneBattua.size() > 0);
-        if(isRitorno && !mioRitorno){
-            return (tempoSuonata+getTempoRitorno())/1000;
-        }        
-        
-        return tempoSuonata/1000;
-    }
-    
-    //restituire il minimo dei massimi
-    public Double getMaxContrattempoSec(Integer numero_battuta, Integer numero_campana){
-        return tempoSuonata/1000;
-    }
-    
-    
-    public Integer getNumberBattutaFromModelBattuta(ModelBattuta mb) {
-        int numero_battuta;
-        for (ListIterator it = listaBattute.listIterator(); it.hasNext();) {
-            numero_battuta = it.nextIndex();
-            ModelBattuta o = (ModelBattuta) it.next();
-            if (o.hashCode() == mb.hashCode()) {
-                return numero_battuta;
-            }
-        }
-        return null;
+    //per ora tolgo al massimo il tempo suonata
+    Set<Integer> campanePrecendi = new LinkedHashSet<>(listaBattute.get(numero_battuta - 1).getListaCampane().keySet());
+    boolean mioRitorno = campanePrecendi.contains(numero_campana);
+    if (mioRitorno) {
+      return tempoSuonata / 1000;
     }
 
-    /**
-     * @return the concerto
-     */
-    public ModelConcerto getConcerto() {
-        return concerto;
+    //Nel caso di un doppio con ritorno e la campana selezionata non è quella implicata nel ritorno può anticipare di più
+    Set<Integer> campaneBattua = new LinkedHashSet<>(listaBattute.get(numero_battuta).getListaCampane().keySet());
+    campaneBattua.retainAll(campanePrecendi);
+    boolean isRitorno = (campaneBattua.size() > 0);
+    if (isRitorno && !mioRitorno) {
+      return (tempoSuonata + getTempoRitorno()) / 1000;
     }
 
-    /**
-     * @param concerto the concerto to set
-     */
-    public void setConcerto(ModelConcerto concerto) {
-        this.concerto = concerto;
-    }
+    return tempoSuonata / 1000;
+  }
 
-    /**
-     * @return the numeroCampane
-     */
-    public int getNumeroCampane() {
-        return numeroCampane;
-    }
+  //restituire il minimo dei massimi
+  public Double getMaxContrattempoSec(Integer numero_battuta, Integer numero_campana) {
+    return tempoSuonata / 1000;
+  }
 
-    /**
-     * @param numeroCampane the numeroCampane to set
-     */
-    public void setNumeroCampane(int numeroCampane) {
-        this.numeroCampane = numeroCampane;
+  public Integer getNumberBattutaFromModelBattuta(ModelBattuta mb) {
+    int numero_battuta;
+    for (ListIterator it = listaBattute.listIterator(); it.hasNext();) {
+      numero_battuta = it.nextIndex();
+      ModelBattuta o = (ModelBattuta) it.next();
+      if (o.hashCode() == mb.hashCode()) {
+        return numero_battuta;
+      }
     }
+    return null;
+  }
 
-    /**
-     * @return the listaBattute
-     */
-    public List<ModelBattuta> getListaBattute() {
-        return listaBattute;
-    }
+  /**
+   * @return the concerto
+   */
+  public ModelConcerto getConcerto() {
+    return concerto;
+  }
 
-    /**
-     * @param listaBattute the listaBattute to set
-     */
-    public void setListaBattute(List<ModelBattuta> listaBattute) {
-        this.listaBattute = listaBattute;
-    }
+  /**
+   * @param concerto the concerto to set
+   */
+  public void setConcerto(ModelConcerto concerto) {
+    this.concerto = concerto;
+  }
 
-    /**
-     * @return the tempoRitorno
-     */
-    public double getTempoRitorno() {
-        return tempoRitorno;
-    }
+  /**
+   * @return the numeroCampane
+   */
+  public int getNumeroCampane() {
+    return numeroCampane;
+  }
 
-    /**
-     * @param tempoRitorno the tempoRitorno to set
-     */
-    public void setTempoRitorno(double tempoRitorno) {
-        this.tempoRitorno = tempoRitorno;
-    }
+  /**
+   * @param numeroCampane the numeroCampane to set
+   */
+  public void setNumeroCampane(int numeroCampane) {
+    this.numeroCampane = numeroCampane;
+  }
 
-    /**
-     * @return the tempoSuonata
-     */
-    public double getTempoSuonata() {
-        return tempoSuonata;
-    }
+  /**
+   * @return the listaBattute
+   */
+  public List<ModelBattuta> getListaBattute() {
+    return listaBattute;
+  }
 
-    /**
-     * @param tempoSuonata the tempoSuonata to set
-     */
-    public void setTempoSuonata(double tempoSuonata) {
-        this.tempoSuonata = tempoSuonata;
-    }
+  /**
+   * @param listaBattute the listaBattute to set
+   */
+  public void setListaBattute(List<ModelBattuta> listaBattute) {
+    this.listaBattute = listaBattute;
+  }
+
+  /**
+   * @return the tempoRitorno
+   */
+  public double getTempoRitorno() {
+    return tempoRitorno;
+  }
+
+  /**
+   * @param tempoRitorno the tempoRitorno to set
+   */
+  public void setTempoRitorno(double tempoRitorno) {
+    this.tempoRitorno = tempoRitorno;
+  }
+
+  /**
+   * @return the tempoSuonata
+   */
+  public double getTempoSuonata() {
+    return tempoSuonata;
+  }
+
+  /**
+   * @param tempoSuonata the tempoSuonata to set
+   */
+  public void setTempoSuonata(double tempoSuonata) {
+    this.tempoSuonata = tempoSuonata;
+  }
 
 }

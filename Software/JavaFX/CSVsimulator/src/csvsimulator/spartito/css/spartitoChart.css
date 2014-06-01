@@ -5,7 +5,9 @@
 }
 
 .chart-symbol-pausa {
-  -fx-padding: 1000px 4px;
+  -fx-padding: 1000px 2px;
+  -fx-background-radius: 2px;
+  -fx-background-color: #ff2b00;
 }
 
 .chart-alternative-row-fill, .chart-alternative-column-fill{

@@ -113,7 +113,7 @@ public class Player {
     public void play() {
         isPlaying = true;
         playSuonata = new PlayerUtils.runThreadCampane("CodaCampane", coda, this);
-        //this.spartito.removeAllActiveBattuta();
+        this.spartito.removeAllActiveBattuta();
         playSuonata.start();
     }
 

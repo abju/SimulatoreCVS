@@ -22,11 +22,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
@@ -153,6 +151,9 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
         }
       }
     });
+    nuovaBattuta.setId("inputTextNuovaBattuta");
+      
+    
   }
 
   @FXML
@@ -192,6 +193,11 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     }
   }
 
+  public void moveInputTextNuovaBattuta(Integer index){
+    elenco_battute.getChildren().remove(nuovaBattuta);
+    elenco_battute.getChildren().add(index, nuovaBattuta);
+  }
+  
   private void checkBattuta(String text) {
     ModelBattuta mb = new ModelBattuta();
     boolean battutaValida = true;
@@ -222,37 +228,40 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   /*METODI PRIVATI*/
   private void addBattuta(final ModelBattuta mb) {
 
-    //mb.play(modelConcerto);
-    Label label = new Label(mb.getNomeBattuta(modelConcerto));
-    label.setMaxWidth(USE_PREF_SIZE);
-    label.setPrefWidth(100);
-    label.setMaxWidth(USE_PREF_SIZE);
-    label.getStyleClass().add("battuta");
-
-    //label.getStyleClass().add("battuta-active");
-    label.setAlignment(Pos.CENTER);
-
-    label.setOnMouseClicked((MouseEvent t) -> {
-      int numero_battuta = modelSuonata.getNumberBattutaFromModelBattuta(mb);
-      getOptionBar().setUpOptionBattuta(numero_battuta);
-    });
-
-    
-    
-    SpartitoLabelBattutaController slb = new SpartitoLabelBattutaController();
-    //System.out.println(slb.getLabel());
-    slb.getLabel().setText(mb.getNomeBattuta(modelConcerto));
-    slb.setContexMenu(mb);
-    
-    elenco_battute.getChildren().add(elenco_battute.getChildren().size() - 1, slb);
 
     //Ridisegna cosi posso avere le coordinate deve essere fatto proprio alla fine
     scrollSpartito.layout();
     scrollSpartito.setVvalue(nuovaBattuta.getLayoutY());
 
-    final Integer numero_battuta = this.modelSuonata.pushBattuta(mb);
-    this.spartitoChar.pushBattuta(numero_battuta);
-
+    final Integer numero_battuta = elenco_battute.getChildren().indexOf(nuovaBattuta);
+    this.modelSuonata.addBattuta(mb,numero_battuta);
+    //final Integer numero_battuta = this.modelSuonata.pushBattuta(mb);
+    
+              this.spartitoChar.pushBattuta(numero_battuta);
+    
+    SpartitoLabelBattutaController slb = new SpartitoLabelBattutaController(this);
+    slb.getLabel().setText(mb.getNomeBattuta(modelConcerto));
+    slb.setContexMenu(mb);
+    
+    elenco_battute.getChildren().add(numero_battuta, slb);
+  }
+  
+  public void eliminaBattua(int index){
+    Integer indexText = elenco_battute.getChildren().indexOf(nuovaBattuta);    
+    modelSuonata.removeBattuta(index);
+    
+    //Aggiorno lo spartito
+    elenco_battute.getChildren().remove(nuovaBattuta);
+    elenco_battute.getChildren().remove(index);
+    
+    System.out.println(index + " - " + indexText);
+    if(indexText <= index){
+      elenco_battute.getChildren().add(indexText, nuovaBattuta);
+    } else {
+      elenco_battute.getChildren().add(indexText - 1, nuovaBattuta);
+    }
+    
+    
   }
 
   public void popBattuta() {
@@ -276,8 +285,8 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   }
 
   public void removeAllActiveBattuta() {
-    elenco_battute.getChildren().stream().filter((b) -> (elenco_battute.getChildren().indexOf(b) != elenco_battute.getChildren().size() - 1)).forEach((b) -> {
-      ((Label) b).getStyleClass().remove("battuta-active");
+    elenco_battute.getChildren().stream().filter((b) -> (elenco_battute.getChildren().indexOf(b) != elenco_battute.getChildren().size() - 1)).forEach((Node b) -> {
+      b.getStyleClass().remove("battuta-active");
     });
   }
 

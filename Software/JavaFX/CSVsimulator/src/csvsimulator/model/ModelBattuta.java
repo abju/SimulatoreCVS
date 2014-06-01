@@ -29,8 +29,6 @@ public final class ModelBattuta implements Serializable {
   private final Map<Integer, BooleanProperty> listaReboti;
   private final Map<Integer, BooleanProperty> listaOmesse;
 
-  private final BooleanProperty defaultReboto = new SimpleBooleanProperty(false);
-  private final BooleanProperty defaultOmessa = new SimpleBooleanProperty(false);
 
   public final static Integer KEY_PAUSA = -1;
 
@@ -48,8 +46,8 @@ public final class ModelBattuta implements Serializable {
 
     ModelCampana campana = concerto.getCampanaByNome(nome);
     if (campana != null) {
-      listaReboti.put(campana.getNumero(), defaultReboto);
-      listaOmesse.put(campana.getNumero(), defaultOmessa);
+      listaReboti.put(campana.getNumero(), new SimpleBooleanProperty(false));
+      listaOmesse.put(campana.getNumero(), new SimpleBooleanProperty(false));
       DoubleProperty dp = listaCampane.putIfAbsent(campana.getNumero(), new SimpleDoubleProperty(0.0));
       return (dp == null) ? null : dp.getValue();
     }
@@ -110,25 +108,47 @@ public final class ModelBattuta implements Serializable {
     return this.listaReboti.get(numeroCampana);
   }
 
+  public Integer countReboti(){
+    Integer reboti = 0;
+    for (Map.Entry<Integer, BooleanProperty> entry : listaReboti.entrySet()) {
+      BooleanProperty booleanProperty = entry.getValue();
+      if(booleanProperty.getValue()){
+        reboti += 1;
+      }
+    }
+    return reboti;
+  }
+  
   public BooleanProperty getOmessaProperty(Integer numeroCampana) {
     if (Objects.equals(numeroCampana, KEY_PAUSA)) {
       return new SimpleBooleanProperty(false);
     }
     return this.listaOmesse.get(numeroCampana);
   }
+  
+  
 
   public Boolean getReboto(Integer numeroCampana) {
-    if (numeroCampana == KEY_PAUSA) {
+    if (Objects.equals(numeroCampana, KEY_PAUSA)) {
       return false;
     }
     return this.listaReboti.get(numeroCampana).getValue();
   }
 
   public Boolean getOmessa(Integer numeroCampana) {
-    if (numeroCampana == KEY_PAUSA) {
+    if (Objects.equals(numeroCampana, KEY_PAUSA)) {
       return false;
     }
     return this.listaOmesse.get(numeroCampana).getValue();
+  }
+  
+  public Integer countOmesse(){
+    Integer reboti = 0;
+    reboti = listaOmesse.entrySet().stream()
+            .map((entry) -> entry.getValue())
+            .filter((booleanProperty) -> (booleanProperty.getValue()))
+            .map((_item) -> 1).reduce(reboti, Integer::sum);
+    return reboti;
   }
 
   /**

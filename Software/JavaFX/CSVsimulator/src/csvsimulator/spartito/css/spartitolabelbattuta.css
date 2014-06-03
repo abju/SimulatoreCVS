@@ -5,3 +5,8 @@
 .haveOmessa {
   -fx-background-color: #ff2b00;
 }
+
+.normal {
+  -fx-border-color: #d7d7d7;
+  -fx-border-width: 0 0 1px 0;
+}

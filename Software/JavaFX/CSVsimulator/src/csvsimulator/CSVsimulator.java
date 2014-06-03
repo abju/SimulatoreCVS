@@ -36,7 +36,7 @@ public class CSVsimulator extends Application {
     public void start(Stage stage) throws Exception {
         
         stage.getIcons().add(new Image(CSVsimulator.class.getResourceAsStream( "myBell.png" )));
-        stage.setTitle("Simulatore di Concerti di Campane a Sistema Veronese");
+        stage.setTitle("Simulatore Concerti a Sistema Veronese");
         
         MainController root = new MainController();
         if (optArgs.filename != null) {

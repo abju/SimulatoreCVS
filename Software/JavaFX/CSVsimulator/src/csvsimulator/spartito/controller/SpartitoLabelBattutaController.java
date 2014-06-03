@@ -160,7 +160,6 @@ public class SpartitoLabelBattutaController extends BorderPane implements Initia
       Integer numero_battuta = spc.getModelSuonata().getNumberBattutaFromModelBattuta(mb);
       spc.getOptionBar().setUpOptionBattuta(numero_battuta);
     });
-    
   }
 
   @Override

@@ -47,7 +47,8 @@ public class NavbarBaseController extends HBox implements Initializable {
     
     public void setUpNavSpartito(Object obj){
         ButtonsGroupController btng1 = new ButtonsGroupController("player", obj);
-        this.getChildren().add(btng1);
+        ButtonsGroupController btng2 = new ButtonsGroupController("save", obj);
+        this.getChildren().addAll(btng1, btng2);
     }
     
 }

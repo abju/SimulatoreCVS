@@ -6,8 +6,11 @@
 package csvsimulator.model;
 
 import global.GlobalUtils;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,6 +18,13 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -99,7 +109,7 @@ public class ModelSuonata implements Serializable {
       prevBattuta = new ArrayList<>();
       for (Integer numeroCampana : modelBattuta.getListaCampane().keySet()) {
 
-                //val è il tempo dell'dell'ultima campana più la giusta pausa
+        //val è il tempo dell'dell'ultima campana più la giusta pausa
         //la moltiplicazione aggiunge il contrattempo
         double intval = val;
 
@@ -155,7 +165,7 @@ public class ModelSuonata implements Serializable {
       return 0.0;
     }
 
-        //poi se deve fare un ritorno non può anticipare troppo senza fare ribattute o cali, ma può strozzare quindi gli si può annullare parte del tempo
+    //poi se deve fare un ritorno non può anticipare troppo senza fare ribattute o cali, ma può strozzare quindi gli si può annullare parte del tempo
     //per ora tolgo al massimo il tempo suonata
     Set<Integer> campanePrecendi = new LinkedHashSet<>(listaBattute.get(numero_battuta - 1).getListaCampane().keySet());
     boolean mioRitorno = campanePrecendi.contains(numero_campana);
@@ -189,6 +199,44 @@ public class ModelSuonata implements Serializable {
       }
     }
     return null;
+  }
+
+  public void saveOnExcel(int numero_colonne, final Window w) {
+    FileChooser fileChooser = new FileChooser();
+    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Excel (*.xlsx)", "*.xlsx");
+    fileChooser.getExtensionFilters().add(extFilter);
+
+    File file = fileChooser.showSaveDialog(w);
+
+    if (file != null) {
+
+      Workbook wb = new XSSFWorkbook();
+      Sheet sheet = wb.createSheet("Spartito_Suonata");
+      int rowIndex = 0;
+      int columnIndex = 0;
+      Cell cell;
+      Row row = sheet.createRow(rowIndex);
+      for (ModelBattuta modelBattuta : this.getListaBattute()) {
+        cell = row.createCell(columnIndex);
+        cell.setCellValue(modelBattuta.getNomeBattuta(this.concerto));
+
+        columnIndex++;
+        if (columnIndex >= numero_colonne) {
+          rowIndex++;
+          columnIndex = 0;
+          row = sheet.createRow(rowIndex);
+        }
+      }
+
+      // Write the output to a file
+      try {
+        FileOutputStream out = new FileOutputStream(file);
+        wb.write(out);
+        out.close();
+      } catch (Exception e) {
+      }
+
+    }
   }
 
   /**

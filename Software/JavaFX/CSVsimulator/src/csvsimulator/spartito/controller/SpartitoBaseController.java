@@ -165,8 +165,8 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   }
 
   /**
-   * 
-   * @param t 
+   *
+   * @param t
    */
   @FXML
   private void nuovaBattutaKeyPress(KeyEvent t) {
@@ -175,9 +175,15 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
       t.consume();
     }
 
-    if (t.getCode() == KeyCode.BACK_SPACE) {
+    if (t.getCode() == KeyCode.BACK_SPACE || t.getCode() == KeyCode.DELETE) {
       if (nuovaBattuta.getCharacters().length() <= 0) {
-        popBattuta();
+        Integer numero_battuta = elenco_battute.getChildren().indexOf(nuovaBattuta);
+        if (t.getCode() == KeyCode.BACK_SPACE){
+          numero_battuta -= 1;
+        }
+        if (numero_battuta >= 0 && numero_battuta < modelSuonata.getListaBattute().size()) {
+          eliminaBattua(numero_battuta);
+        }
       }
     } else if (t.isMetaDown() && t.getText().length() > 0) {
 
@@ -193,8 +199,8 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   }
 
   /**
-   * 
-   * @param t 
+   *
+   * @param t
    */
   @FXML
   private void nuovaBattutaKeyReleased(KeyEvent t) {
@@ -210,17 +216,18 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   }
 
   /**
-   * 
-   * @param index 
+   *
+   * @param index
    */
   public void moveInputTextNuovaBattuta(Integer index) {
     elenco_battute.getChildren().remove(nuovaBattuta);
     elenco_battute.getChildren().add(index, nuovaBattuta);
+    nuovaBattuta.requestFocus();
   }
 
   /**
-   * 
-   * @param text 
+   *
+   * @param text
    */
   private void checkBattuta(String text) {
     ModelBattuta mb = new ModelBattuta();
@@ -250,8 +257,8 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   }
 
   /**
-   * 
-   * @param mb 
+   *
+   * @param mb
    */
   private void addBattuta(final ModelBattuta mb) {
 
@@ -278,11 +285,13 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
    */
   public void eliminaBattua(int index) {
     Integer indexText = elenco_battute.getChildren().indexOf(nuovaBattuta);
+    ModelBattuta mb = modelSuonata.getListaBattute().get(index);
     modelSuonata.removeBattuta(index);
 
     //Aggiorno lo spartito
     elenco_battute.getChildren().remove(nuovaBattuta);
     elenco_battute.getChildren().remove(index);
+    spartitoChar.removeBattuta(mb, index);
 
     if (indexText <= index) {
       elenco_battute.getChildren().add(indexText, nuovaBattuta);
@@ -294,20 +303,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
 
   /**
    *
-   */
-  public void popBattuta() {
-    Integer index = this.modelSuonata.getListaBattute().size() - 1;
-    if (index >= 0) {
-      elenco_battute.getChildren().remove(elenco_battute.getChildren().get(index));
-      spartitoChar.popBattuta();
-      modelSuonata.getListaBattute().remove(modelSuonata.getListaBattute().size() - 1);
-
-    }
-  }
-
-  /**
-   * 
-   * @param i 
+   * @param i
    */
   public void setActiveBattuta(Integer i) {
     if (i > 0) {
@@ -320,7 +316,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   }
 
   /**
-   * 
+   *
    */
   public void removeAllActiveBattuta() {
     elenco_battute.getChildren().stream().filter((b) -> (elenco_battute.getChildren().indexOf(b) != elenco_battute.getChildren().size() - 1)).forEach((Node b) -> {
@@ -329,8 +325,8 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   }
 
   /**
-   * 
-   * @param i 
+   *
+   * @param i
    */
   public void setTimePlayer(Integer i) {
     //this.spartitoPentagrammaMaschera.setArrowPosition(i);

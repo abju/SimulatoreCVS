@@ -27,7 +27,7 @@ public class ModelConcerto implements Serializable {
     private String nomeConcerto;
     private List<ModelCampana> listaCampane;
     
-    private ModelCampana modelPausa;
+    transient private ModelCampana modelPausa;
     //se si vuole evitare di serializzare un attributo basta mettere transient
     //con readObject si può decidere come impostare le variaibili ingorate in scrittura
     //transient private List<ModelCampana> listaCampane;

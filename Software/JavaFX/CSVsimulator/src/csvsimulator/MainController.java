@@ -25,6 +25,7 @@ package csvsimulator;
 
 import csvsimulator.campanile.controller.CampanileNuovoController;
 import csvsimulator.model.ModelConcerto;
+import csvsimulator.model.ModelSuonata;
 import csvsimulator.navbar.controller.NavbarBaseController;
 import csvsimulator.spartito.controller.SpartitoBaseController;
 import java.io.IOException;
@@ -125,7 +126,14 @@ public class MainController extends BorderPane implements Initializable {
     if (mc == null) {
       sbc.setModelConcerto(sbc.loadModelConcerto());
     }
-
+  }
+  
+  public void apriNuovaSuonataCompleta(ModelSuonata ms) {
+    SpartitoBaseController sbc = new SpartitoBaseController();
+    if (ms != null) {
+      sbc.setModelSuonata(ms);
+    }
+    main.setCenter(sbc);
   }
 
 }

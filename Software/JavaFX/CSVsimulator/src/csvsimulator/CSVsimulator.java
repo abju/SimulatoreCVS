@@ -5,9 +5,11 @@
 package csvsimulator;
 
 import csvsimulator.model.ModelConcerto;
+import csvsimulator.model.ModelSuonata;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.util.List;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -23,63 +25,82 @@ import net.sourceforge.argparse4j.inf.ArgumentParserException;
  */
 public class CSVsimulator extends Application {
 
-    private static class Option {
+  private static class Option {
 
-        @Arg(dest = "filename")
-        public String filename;
+    @Arg(dest = "filename")
+    public String filename;
 
+    @Arg(dest = "filesuonata")
+    public String filesuonata;
+  }
+
+  private static Option optArgs;
+
+  @Override
+  public void start(Stage stage) throws Exception {
+        
+    stage.getIcons().add(new Image(CSVsimulator.class.getResourceAsStream("myBell.png")));
+    stage.setTitle("Simulatore Concerti a Sistema Veronese");
+
+    MainController root = new MainController();
+
+    System.out.println(optArgs.filesuonata + " . "  + optArgs.filename);
+    if (optArgs.filesuonata != null) {
+      ModelSuonata ms = new ModelSuonata();
+      File file = new File(optArgs.filesuonata);
+      String path = file.getAbsolutePath();
+      
+      
+
+      ObjectInputStream ois;
+      try {
+        ois = new ObjectInputStream(new FileInputStream(path));
+        ms = (ModelSuonata) ois.readObject();
+      } catch (ClassNotFoundException ex) {
+        System.err.println(ex.toString());
+      }
+      root.apriNuovaSuonataCompleta(ms);
+      
+    } else if (optArgs.filename != null) {
+      ModelConcerto mc = new ModelConcerto();
+      File file = new File(optArgs.filename);
+      String path = file.getAbsolutePath();
+
+      ObjectInputStream ois;
+      try {
+        ois = new ObjectInputStream(new FileInputStream(path));
+        mc = (ModelConcerto) ois.readObject();
+      } catch (ClassNotFoundException ex) {
+        System.err.println(ex.toString());
+      }
+      root.apriNuovaSuonata(mc);
     }
 
-    private static Option optArgs;
+    Scene scene = new Scene(root);
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        
-        stage.getIcons().add(new Image(CSVsimulator.class.getResourceAsStream( "myBell.png" )));
-        stage.setTitle("Simulatore Concerti a Sistema Veronese");
-        
-        MainController root = new MainController();
-        if (optArgs.filename != null) {
-            ModelConcerto mc = new ModelConcerto();
-            File file = new File(optArgs.filename);
-            String path = file.getAbsolutePath();
+    stage.setScene(scene);
+    stage.show();
+  }
 
-            ObjectInputStream ois;
-            try {
-                ois = new ObjectInputStream(new FileInputStream(path));
-                mc = (ModelConcerto) ois.readObject();
-            } catch (ClassNotFoundException ex) {
-                System.err.println(ex.toString());
-            }
-            root.apriNuovaSuonata(mc);
-        }
-        
-        
-        
-        Scene scene = new Scene(root);
+  /**
+   * The main() method is ignored in correctly deployed JavaFX application.
+   * main() serves only as fallback in case the application can not be launched
+   * through deployment artifacts, e.g., in IDEs with limited FX support.
+   * NetBeans ignores main().
+   *
+   * @param args the command line arguments
+   */
+  public static void main(String[] args) {
+    optArgs = new Option();
 
-        stage.setScene(scene);
-        stage.show();
+    try {
+      ArgumentParser parser = ArgumentParsers.newArgumentParser("prog");
+      parser.addArgument("--filename").required(false);
+      parser.addArgument("--filesuonata").required(false);
+      parser.parseArgs(args, optArgs);
+    } catch (ArgumentParserException ex) {
+
     }
-
-    /**
-     * The main() method is ignored in correctly deployed JavaFX application.
-     * main() serves only as fallback in case the application can not be
-     * launched through deployment artifacts, e.g., in IDEs with limited FX
-     * support. NetBeans ignores main().
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        optArgs = new Option();
-
-        try {
-            ArgumentParser parser = ArgumentParsers.newArgumentParser("prog");
-            parser.addArgument("--filename").required(false);
-            parser.parseArgs(args, optArgs);
-        } catch (ArgumentParserException ex) {
-
-        }
-        launch(args);
-    }
+    launch(args);
+  }
 }

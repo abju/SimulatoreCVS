@@ -9,7 +9,6 @@ import csvsimulator.spartito.controller.SpartitoBaseController;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -28,7 +27,6 @@ import org.controlsfx.control.ButtonBar;
 import org.controlsfx.control.action.AbstractAction;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
-import org.controlsfx.dialog.Dialogs;
 import player.Player;
 
 /**
@@ -68,8 +66,13 @@ public class ButtonsGroupController extends BorderPane implements Initializable 
 
   public final void saveGroup(final SpartitoBaseController obj) {
     nome_gruppo.setText("Salva");
+    BottoneGenericoController btng = new BottoneGenericoController("Salva", getClass().getResourceAsStream("/csvsimulator/navbar/images/save.png"));
+    btng.setOnMouseClicked((MouseEvent t) -> {
+      obj.getModelSuonata().saveFileSuonata(((Node) obj).getScene().getWindow(), null);
+    });
+    buttons_space.getChildren().add(btng);
 
-    BottoneGenericoController btng = new BottoneGenericoController("Esporta su Excel", getClass().getResourceAsStream("/csvsimulator/navbar/images/save_on_excel.png"));
+    btng = new BottoneGenericoController("Esporta su Excel", getClass().getResourceAsStream("/csvsimulator/navbar/images/save_on_excel.png"));
     btng.setOnMouseClicked((MouseEvent t) -> {
 
       BigDecimalField spinnerNumeroColonne = new BigDecimalField(BigDecimal.TEN);
@@ -80,6 +83,7 @@ public class ButtonsGroupController extends BorderPane implements Initializable 
         {
           ButtonBar.setType(this, ButtonBar.ButtonType.OK_DONE);
         }
+
         @Override
         public void execute(ActionEvent ae) {
           Dialog dlg = (Dialog) ae.getSource();
@@ -117,6 +121,7 @@ public class ButtonsGroupController extends BorderPane implements Initializable 
       obj.moveInputTextNuovaBattuta(obj.getModelSuonata().getListaBattute().size());
       if (!player.getIsPlaying()) {
         obj.getModelSuonata().getTotalTime();
+        System.out.println(obj.getModelSuonata().getConcerto());
         player.createCodaCamapana(obj.getModelSuonata().getSuonata(), obj.getModelSuonata().getConcerto());
         player.play();
       } else {

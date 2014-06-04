@@ -5,6 +5,9 @@
  */
 package csvsimulator.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,13 +29,17 @@ public final class ModelBattuta implements Serializable {
   private static final long serialVersionUID = 1;
 
   private Map<Integer, DoubleProperty> listaCampane;
-  private final Map<Integer, BooleanProperty> listaReboti;
-  private final Map<Integer, BooleanProperty> listaOmesse;
+  private Map<Integer, BooleanProperty> listaReboti;
+  private Map<Integer, BooleanProperty> listaOmesse;
 
 
   public final static Integer KEY_PAUSA = -1;
 
   public ModelBattuta() {
+    init();
+  }
+  
+  private void init(){
     listaCampane = new TreeMap(Collections.reverseOrder());
     listaReboti = new TreeMap(Collections.reverseOrder());
     listaOmesse = new TreeMap(Collections.reverseOrder());
@@ -159,6 +166,18 @@ public final class ModelBattuta implements Serializable {
     listaCampane.forEach((a, b) -> lista.put(a, b.getValue()));
     return lista;
   }
+  
+  public Map<Integer, Boolean> getListaReboti() {
+    final Map<Integer, Boolean> lista = new TreeMap(Collections.reverseOrder());
+    listaReboti.forEach((a, b) -> lista.put(a, b.getValue()));
+    return lista;
+  }
+  
+  public Map<Integer, Boolean> getListaOmesse() {
+    final Map<Integer, Boolean> lista = new TreeMap(Collections.reverseOrder());
+    listaOmesse.forEach((a, b) -> lista.put(a, b.getValue()));
+    return lista;
+  }
 
   public void setContrattempo(Integer numeroCampana, Double value) {
     this.listaCampane.get(numeroCampana).set(value);
@@ -168,4 +187,33 @@ public final class ModelBattuta implements Serializable {
     return this.listaCampane.get(numeroCampana).getValue();
   }
 
+  
+  
+  private void writeObject(ObjectOutputStream oos) throws IOException {
+    oos.writeLong(serialVersionUID);
+    oos.writeObject(getListaCampane());
+    oos.writeObject(getListaOmesse());
+    oos.writeObject(getListaReboti());
+  }
+  
+  private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+    long versione = (Long) ois.readLong();
+    
+    final Map<Integer, Double> listaC = (Map<Integer, Double>)ois.readObject();
+    final Map<Integer, Boolean> listaR = (Map<Integer, Boolean>)ois.readObject();
+    final Map<Integer, Boolean> listaO = (Map<Integer, Boolean>)ois.readObject();    
+    
+    init();
+    
+    for (Map.Entry<Integer, Double> entry : listaC.entrySet()) {
+      Integer integer = entry.getKey();
+      Double double1 = entry.getValue();
+      
+      listaCampane.put(integer, new SimpleDoubleProperty(double1));
+      if(!Objects.equals(integer, KEY_PAUSA)){
+        listaOmesse.put(integer, new SimpleBooleanProperty(listaO.get(integer)));
+        listaReboti.put(integer, new SimpleBooleanProperty(listaR.get(integer)));
+      }
+    }
+  }
 }

@@ -28,6 +28,7 @@ public class ModelCampana implements Serializable {
   private int numero;
   transient private AudioClip audioClip;
   transient private String path;
+  transient private FileOutputStream fos;
 
   public ModelCampana() {
   }
@@ -60,7 +61,14 @@ public class ModelCampana implements Serializable {
     oos.writeObject(nome);
     oos.writeInt(numero);
 
-    File file = new File(path);
+    File file;
+
+    /*if (path == null) {
+     file = new File(audioClip.getSource());
+     } else {*/
+    System.out.println(path);
+    file = new File(path);
+    //}
 
     FileInputStream fis = new FileInputStream(file);
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -93,12 +101,14 @@ public class ModelCampana implements Serializable {
 
     System.err.println("Lunghezza lettura: " + buf.length);
 
-    File temp = File.createTempFile("tempfile", ".wav");
-    FileOutputStream fos = new FileOutputStream(temp.getAbsolutePath());
+    File temp = File.createTempFile("tempfileCSVS", ".wav");
+    fos = new FileOutputStream(temp.getAbsolutePath());
     fos.write(buf);
     fos.close();
 
     URI u = temp.toURI();
+    path = temp.getAbsolutePath();
+    System.out.println(u.toURL().toString());
     audioClip = new AudioClip(u.toString());
   }
 

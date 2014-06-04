@@ -8,9 +8,10 @@ package csvsimulator.model;
 import global.GlobalUtils;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,7 +36,6 @@ public class ModelSuonata implements Serializable {
   private static final long serialVersionUID = 1;
 
   private ModelConcerto concerto;
-  private int numeroCampane;
   private List<ModelBattuta> listaBattute;
   private double tempoSuonata;
   private double tempoRitorno;
@@ -201,6 +201,34 @@ public class ModelSuonata implements Serializable {
     return null;
   }
 
+  public void saveFileSuonata(final Window w, File dir) {
+    FileChooser fileChooser = new FileChooser();
+    if (dir != null) {
+      fileChooser.setInitialDirectory(dir);
+    }
+
+    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Suonata campane sistema veronese (*.csvs)", "*.csvs");
+    fileChooser.getExtensionFilters().add(extFilter);
+
+    File file = fileChooser.showSaveDialog(w);
+
+    if (file != null) {
+      SaveFile(file);
+    }
+  }
+
+  private void SaveFile(File file) {
+    ObjectOutputStream oos = null;
+    try {
+      oos = new ObjectOutputStream(new FileOutputStream(file));
+      oos.writeObject(this);
+      oos.close();
+    } catch (IOException e) {
+      System.err.println(e.toString());
+    }
+    System.out.println("Salvataggio suonata completato");
+  }
+
   public void saveOnExcel(int numero_colonne, final Window w) {
     FileChooser fileChooser = new FileChooser();
     FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Excel (*.xlsx)", "*.xlsx");
@@ -251,20 +279,6 @@ public class ModelSuonata implements Serializable {
    */
   public void setConcerto(ModelConcerto concerto) {
     this.concerto = concerto;
-  }
-
-  /**
-   * @return the numeroCampane
-   */
-  public int getNumeroCampane() {
-    return numeroCampane;
-  }
-
-  /**
-   * @param numeroCampane the numeroCampane to set
-   */
-  public void setNumeroCampane(int numeroCampane) {
-    this.numeroCampane = numeroCampane;
   }
 
   /**

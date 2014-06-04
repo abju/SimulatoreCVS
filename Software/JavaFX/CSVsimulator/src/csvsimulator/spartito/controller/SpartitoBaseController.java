@@ -27,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -97,7 +98,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
       throw new RuntimeException(exception);
     }
 
-    setModelSuonata(new ModelSuonata());
+    this.modelSuonata = new ModelSuonata();
 
     spartitoChar = new SpartitoChartController(new NumberAxis("Tempo", 0, 0, 1000), new CategoryAxis());
     spartitoChar.setLegendVisible(false);
@@ -261,13 +262,19 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
    * @param mb
    */
   private void addBattuta(final ModelBattuta mb) {
+     addBattuta(mb, false);
+  }
+  
+  private void addBattuta(final ModelBattuta mb, Boolean load) {
 
     //Ridisegna cosi posso avere le coordinate deve essere fatto proprio alla fine
     scrollSpartito.layout();
     scrollSpartito.setVvalue(nuovaBattuta.getLayoutY());
 
     final Integer numero_battuta = elenco_battute.getChildren().indexOf(nuovaBattuta);
-    this.modelSuonata.addBattuta(mb, numero_battuta);
+    if(!load){
+      this.modelSuonata.addBattuta(mb, numero_battuta);
+    }
     //final Integer numero_battuta = this.modelSuonata.pushBattuta(mb);
 
     this.spartitoChar.addBattuta(numero_battuta);
@@ -339,15 +346,7 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
     return modelConcerto;
   }
 
-  /**
-   * @param modelConcerto the modelConcerto to set
-   */
-  public void setModelConcerto(ModelConcerto modelConcerto) {
-    this.modelConcerto = modelConcerto;
-    this.modelSuonata.setConcerto(this.modelConcerto);
-    this.spartitoChar.setModelConcerto(modelConcerto);
-    this.spartitoChar.setModelSuonata(this.getModelSuonata());
-  }
+  
 
   /**
    * @return the navbar
@@ -411,12 +410,33 @@ public class SpartitoBaseController extends BorderPane implements Initializable 
   public ModelSuonata getModelSuonata() {
     return modelSuonata;
   }
+  
+  /**
+   * @param modelConcerto the modelConcerto to set
+   */
+  public void setModelConcerto(ModelConcerto modelConcerto) {
+    this.modelConcerto = modelConcerto;
+    this.modelSuonata.setConcerto(this.modelConcerto);
+    this.spartitoChar.setModelConcerto(modelConcerto);
+    this.spartitoChar.setModelSuonata(this.getModelSuonata());
+  }
 
   /**
    * @param modelSuonata the modelSuonata to set
    */
   public void setModelSuonata(ModelSuonata modelSuonata) {
+    this.modelConcerto = modelSuonata.getConcerto();
     this.modelSuonata = modelSuonata;
+    
+    System.out.println(this.spartitoChar);
+    
+    this.spartitoChar.setModelConcerto(modelConcerto);
+    this.spartitoChar.setModelSuonata(this.getModelSuonata());
+    
+    for (ModelBattuta modelBattuta : modelSuonata.getListaBattute()) {
+      addBattuta(modelBattuta, true);
+    }
+    
   }
 
 }
